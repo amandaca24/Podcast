@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() {
 
-    val allEpisodes: LiveData<List<Episode>> = repository.allEpisodes.asLiveData()
+    val allEpisodes = repository.allEpisodes
 
     fun insert(episode: Episode) = viewModelScope.launch {
         repository.insert(episode)

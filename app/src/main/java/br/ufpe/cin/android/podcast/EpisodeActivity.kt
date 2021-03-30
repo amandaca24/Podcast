@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.ufpe.cin.android.podcast.data.Episode
+import br.ufpe.cin.android.podcast.data.EpisodeDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
 import com.prof.rssparser.Parser
@@ -25,7 +27,8 @@ class EpisodeActivity : AppCompatActivity() {
 
     //private val newEpisodeActivityRequestCode = 1
     private val episodeViewModel: EpisodeViewModel by viewModels {
-        EpisodeViewModel.EpisodeViewModelFactory((application as EpisodeApplication).repository)
+        val repo = EpisodeRepository(EpisodeDatabase.getDatabase(this).episodeDAO())
+        EpisodeViewModel.EpisodeViewModelFactory(repo)
     }
 
     private lateinit var parser : Parser
@@ -49,9 +52,13 @@ class EpisodeActivity : AppCompatActivity() {
 
         }
 
-        episodeViewModel.allEpisodes.observe(this){
-            episodes -> episodes.let { episodeAdapter.submitList(it.toList()) }
-        }
+        episodeViewModel.allEpisodes.observe(
+            this,
+            Observer {
+                episodeAdapter.submitList(it.toList())
+            }
+        )
+
 
         parser = Parser.Builder()
             .context(this)
@@ -59,27 +66,28 @@ class EpisodeActivity : AppCompatActivity() {
             .build()
     }
 
-    /* Abrir o episódio quando clicado
-    private fun adapterOnClick(episode: Episode) {
-        val intent = Intent(this, EpisodeDetailActivity()::class.java)
-        intent.putExtra(EP_LINK, episode.linkEpisodio)
-        startActivity(intent)
-    }*/
-
     override fun onStart() {
         super.onStart()
         scope.launch {
             val channel = withContext(Dispatchers.IO) {
                 parser.getChannel(EpisodeActivity.PODCAST_FEED)
             }
-            //val episode = Episode(channel.articles.title, )
-            //val articles = channel.articles.toString()
-            //val title = channel.articles.title
 
+            channel.articles.forEach { a ->
+                var episode = Episode(
+                    a.link.toString(),
+                    a.title.toString(),
+                    a.description.toString(),
+                    a.sourceUrl.toString(),
+                    a.pubDate.toString())
+
+                episodeViewModel.insert(episode)
+                }
             }
-        }
+    }
 
 }
+
 
 
 

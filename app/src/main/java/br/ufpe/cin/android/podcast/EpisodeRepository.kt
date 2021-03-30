@@ -1,23 +1,24 @@
 package br.ufpe.cin.android.podcast
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import br.ufpe.cin.android.podcast.dao.EpisodeDAO
 import br.ufpe.cin.android.podcast.data.Episode
 import kotlinx.coroutines.flow.Flow
 
 class EpisodeRepository(private val episodeDao: EpisodeDAO) {
 
-    val allEpisodes: Flow<List<Episode>> = episodeDao.getAll()
+    val allEpisodes: LiveData<List<Episode>> = episodeDao.getAll()
 
-    fun findByPk(pk: String){
+    suspend fun findByPk(pk: String){
         episodeDao.findByPk(pk)
     }
 
-    fun findByTitle(title: String){
+    suspend fun findByTitle(title: String){
         episodeDao.findByTitle(title)
     }
 
-    fun findByDate(date: String){
+    suspend fun findByDate(date: String){
         episodeDao.findByDate(date)
     }
 
@@ -28,7 +29,8 @@ class EpisodeRepository(private val episodeDao: EpisodeDAO) {
         episodeDao.insert(episode)
     }
 
-    fun delete(episode: Episode){
+    @WorkerThread
+    suspend fun delete(episode: Episode){
         episodeDao.delete(episode)
     }
 }
