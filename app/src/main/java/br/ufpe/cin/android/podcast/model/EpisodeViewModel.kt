@@ -1,7 +1,7 @@
 package br.ufpe.cin.android.podcast.model
 
 import androidx.lifecycle.*
-import br.ufpe.cin.android.podcast.EpisodeRepository
+import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.data.Episode
 import kotlinx.coroutines.launch
 

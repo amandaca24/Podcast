@@ -3,11 +3,17 @@ package br.ufpe.cin.android.podcast
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.ufpe.cin.android.podcast.adapters.FeedAdapter
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.Feed
+import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityMainBinding
+import br.ufpe.cin.android.podcast.model.FeedViewModel
+import br.ufpe.cin.android.podcast.model.FeedViewModelFactory
+import br.ufpe.cin.android.podcast.repositories.FeedRepository
 import com.prof.rssparser.Parser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +29,13 @@ class MainActivity : AppCompatActivity() {
         val PODCAST_FEED = "https://jovemnerd.com.br/feed-nerdcast/"
     }
 
-    private lateinit var feed: ArrayList<Feed>
     private lateinit var lista: List<Episode>
+
+    private val feedViewModel: FeedViewModel by viewModels() {
+        val feedRepo = FeedRepository(PodcastDatabase.getDatabase(this).feedDAO())
+        FeedViewModelFactory(feedRepo)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +56,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EpisodeActivity::class.java))
         }
 
+        feedViewModel.feed.observe(
+            this,
+            Observer {
+                feedAdapter.submitList(it.toList())
+            })
+
         parser = Parser.Builder()
             .context(this)
             .cacheExpirationMillis(24L * 60L * 60L * 100L)
@@ -59,6 +76,7 @@ class MainActivity : AppCompatActivity() {
             }
 
 
+
             val show = Feed(
                 PODCAST_FEED,
                 channel.title.toString(),
@@ -66,11 +84,10 @@ class MainActivity : AppCompatActivity() {
                 channel.link.toString(),
                 channel.image.toString(),
                 10,
-                10,
-                lista
+                10
             )
 
-            feed.add(show)
+            feedViewModel.insert(show)
 
         }
 

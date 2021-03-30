@@ -1,19 +1,16 @@
 package br.ufpe.cin.android.podcast
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.activity.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.ufpe.cin.android.podcast.data.Episode
-import br.ufpe.cin.android.podcast.data.EpisodeDatabase
+import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
+import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import com.prof.rssparser.Parser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +24,7 @@ class EpisodeActivity : AppCompatActivity() {
 
     //private val newEpisodeActivityRequestCode = 1
     private val episodeViewModel: EpisodeViewModel by viewModels {
-        val repo = EpisodeRepository(EpisodeDatabase.getDatabase(this).episodeDAO())
+        val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModel.EpisodeViewModelFactory(repo)
     }
 

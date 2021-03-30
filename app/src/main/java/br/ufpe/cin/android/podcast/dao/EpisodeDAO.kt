@@ -1,11 +1,8 @@
 package br.ufpe.cin.android.podcast.dao
 
-import androidx.datastore.preferences.protobuf.LazyStringArrayList
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import br.ufpe.cin.android.podcast.data.Episode
-import kotlinx.coroutines.flow.Flow
-import java.util.*
 
 @Dao
 interface EpisodeDAO {

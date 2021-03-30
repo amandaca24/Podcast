@@ -12,8 +12,8 @@ data class Feed(
     var linkSite: String,
     var imagemURL: String,
     var imagemLargura: Int,
-    var imagemAltura: Int,
-    val episodes: List<Episode>
+    var imagemAltura: Int
+    //val episodes: List<Episode>
 ) {
     override fun toString(): String {
         return "$titulo => $linkSite"

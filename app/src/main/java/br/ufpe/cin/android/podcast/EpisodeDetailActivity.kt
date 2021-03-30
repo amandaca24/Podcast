@@ -11,7 +11,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
     private lateinit var binding : ActivityEpisodeDetailBinding
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
-        EpisodeViewModel.EpisodeViewModelFactory((application as EpisodeApplication).repository)
+        EpisodeViewModel.EpisodeViewModelFactory((application as PodcastApplication).repository)
     }
 
     private val pk: String = intent.getStringExtra("EP_LINK").toString()

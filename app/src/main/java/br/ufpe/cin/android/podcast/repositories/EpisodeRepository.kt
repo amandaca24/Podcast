@@ -1,4 +1,4 @@
-package br.ufpe.cin.android.podcast
+package br.ufpe.cin.android.podcast.repositories
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
