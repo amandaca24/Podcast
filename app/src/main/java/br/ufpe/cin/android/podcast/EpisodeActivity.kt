@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import br.ufpe.cin.android.podcast.adapters.EpisodeAdapter
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeBinding
@@ -22,7 +23,6 @@ const val EP_LINK = "episode link"
 class EpisodeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEpisodeBinding
 
-    //private val newEpisodeActivityRequestCode = 1
     private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModel.EpisodeViewModelFactory(repo)
@@ -34,13 +34,15 @@ class EpisodeActivity : AppCompatActivity() {
         val PODCAST_FEED = "https://jovemnerd.com.br/feed-nerdcast/"
     }
 
+    private lateinit var episodeAdapter: EpisodeAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEpisodeBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_episode)
 
-        val recyclerViewEpisodes = binding.recyclerView
-        val episodeAdapter = EpisodeAdapter(layoutInflater)
+        val recyclerViewEpisodes = binding.episodeRV
+        episodeAdapter = EpisodeAdapter(layoutInflater)
 
         recyclerViewEpisodes.apply {
             layoutManager = LinearLayoutManager(this@EpisodeActivity)
@@ -67,7 +69,7 @@ class EpisodeActivity : AppCompatActivity() {
         super.onStart()
         scope.launch {
             val channel = withContext(Dispatchers.IO) {
-                parser.getChannel(EpisodeActivity.PODCAST_FEED)
+                parser.getChannel(PODCAST_FEED)
             }
 
             channel.articles.forEach { a ->
@@ -80,6 +82,8 @@ class EpisodeActivity : AppCompatActivity() {
 
                 episodeViewModel.insert(episode)
                 }
+
+            //episodeAdapter.notifyDataSetChanged()
             }
     }
 

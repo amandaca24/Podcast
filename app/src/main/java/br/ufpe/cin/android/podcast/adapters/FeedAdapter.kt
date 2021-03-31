@@ -15,6 +15,7 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
         fun bindTo(feed: Feed){
             binding.feedTitle.text = feed.titulo
             binding.feedDescription.text = feed.descricao
+            binding.firstEp.text = feed.episodes[0].toString()
 
         }
 

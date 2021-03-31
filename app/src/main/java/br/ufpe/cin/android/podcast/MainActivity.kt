@@ -75,7 +75,16 @@ class MainActivity : AppCompatActivity() {
                 parser.getChannel(PODCAST_FEED)
             }
 
+            channel.articles.forEach { a ->
+                var episode = Episode(
+                    a.link.toString(),
+                    a.title.toString(),
+                    a.description.toString(),
+                    a.sourceUrl.toString(),
+                    a.pubDate.toString())
 
+                lista.toMutableList().add(episode)
+            }
 
             val show = Feed(
                 PODCAST_FEED,
@@ -84,7 +93,8 @@ class MainActivity : AppCompatActivity() {
                 channel.link.toString(),
                 channel.image.toString(),
                 10,
-                10
+                10,
+                lista
             )
 
             feedViewModel.insert(show)

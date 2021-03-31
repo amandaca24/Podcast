@@ -33,6 +33,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/feed_description"
             android:text="Descrição"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Episódio"
+            android:id="@+id/first_ep"/>
 
     </LinearLayout>
 

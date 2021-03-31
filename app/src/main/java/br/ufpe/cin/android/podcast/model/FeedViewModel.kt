@@ -40,8 +40,8 @@ class FeedViewModel(val feedRepo: FeedRepository) : ViewModel() {
 
 class FeedViewModelFactory(private val repo: FeedRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        //checar se está usando ProfessorViewModel
         if (modelClass.isAssignableFrom(FeedViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
             return FeedViewModel(repo) as T
         }
         throw IllegalArgumentException("ViewModel desconhecido")
