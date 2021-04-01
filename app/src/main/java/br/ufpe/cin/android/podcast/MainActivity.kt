@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val PODCAST_FEED = "https://jovemnerd.com.br/feed-nerdcast/"
     }
 
-    private lateinit var lista: List<Episode>
+    //private lateinit var lista: List<Episode>
 
     private val feedViewModel: FeedViewModel by viewModels() {
         val feedRepo = FeedRepository(PodcastDatabase.getDatabase(this).feedDAO())
@@ -75,17 +75,6 @@ class MainActivity : AppCompatActivity() {
                 parser.getChannel(PODCAST_FEED)
             }
 
-            channel.articles.forEach { a ->
-                var episode = Episode(
-                    a.link.toString(),
-                    a.title.toString(),
-                    a.description.toString(),
-                    a.sourceUrl.toString(),
-                    a.pubDate.toString())
-
-                lista.toMutableList().add(episode)
-            }
-
             val show = Feed(
                 PODCAST_FEED,
                 channel.title.toString(),
@@ -93,8 +82,8 @@ class MainActivity : AppCompatActivity() {
                 channel.link.toString(),
                 channel.image.toString(),
                 10,
-                10,
-                lista
+                10
+                //lista
             )
 
             feedViewModel.insert(show)

@@ -39,7 +39,7 @@ class EpisodeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEpisodeBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_episode)
+        setContentView(binding.root)
 
         val recyclerViewEpisodes = binding.episodeRV
         episodeAdapter = EpisodeAdapter(layoutInflater)
@@ -58,11 +58,11 @@ class EpisodeActivity : AppCompatActivity() {
             }
         )
 
-
         parser = Parser.Builder()
             .context(this)
             .cacheExpirationMillis(24L * 60L * 60L * 100L)
             .build()
+
     }
 
     override fun onStart() {

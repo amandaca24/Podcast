@@ -14,8 +14,8 @@ class EpisodeRepository(private val episodeDao: EpisodeDAO) {
         episodeDao.findByPk(pk)
     }
 
-    suspend fun findByTitle(title: String){
-        episodeDao.findByTitle(title)
+    suspend fun findByTitle(title: String) : Episode {
+        return episodeDao.findByTitle(title)
     }
 
     suspend fun findByDate(date: String){
