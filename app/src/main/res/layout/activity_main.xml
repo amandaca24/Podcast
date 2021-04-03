@@ -8,9 +8,15 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Abrir Episódio"
+        android:text="@string/btn_episodes"
         android:id="@+id/btn_episode"
         />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_user_prefs"
+        android:id="@+id/btn_prefs" />
 
 
     <androidx.recyclerview.widget.RecyclerView

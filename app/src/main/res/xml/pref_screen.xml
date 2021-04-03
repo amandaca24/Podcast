@@ -2,12 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Configurar Username">
+    <PreferenceCategory android:title="RSS Feed Preferences">
         <EditTextPreference
-            android:key="@string/preference_username"
-            android:title="User Name"
-            android:dialogTitle="Change user name"
-            android:dialogMessage="Type your user name"
+            android:key="@string/rss_feed"
+            android:title="RSS Feed"
+            android:dialogTitle="Set a Podcast Feed"
+            android:dialogMessage="Type a rss feed of your preference"
             android:positiveButtonText="Save"
             android:negativeButtonText="Cancel" />
     </PreferenceCategory>

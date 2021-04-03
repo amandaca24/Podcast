@@ -1,10 +1,13 @@
 package br.ufpe.cin.android.podcast
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.ufpe.cin.android.podcast.adapters.FeedAdapter
 import br.ufpe.cin.android.podcast.data.Episode
@@ -25,11 +28,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
     private lateinit var parser : Parser
     private val scope = CoroutineScope(Dispatchers.Main.immediate)
-    companion object {
-        val PODCAST_FEED = "https://jovemnerd.com.br/feed-nerdcast/"
-    }
 
     //private lateinit var lista: List<Episode>
+
+    private val defaultfeed = "https://jovemnerd.com.br/feed-nerdcast/"
 
     private val feedViewModel: FeedViewModel by viewModels() {
         val feedRepo = FeedRepository(PodcastDatabase.getDatabase(this).feedDAO())
@@ -56,6 +58,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EpisodeActivity::class.java))
         }
 
+        binding.btnPrefs.setOnClickListener{
+            startActivity(Intent(this, PreferencesActivity::class.java))
+        }
+
         feedViewModel.feed.observe(
             this,
             Observer {
@@ -70,25 +76,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        scope.launch {
-            val channel = withContext(Dispatchers.IO) {
-                parser.getChannel(PODCAST_FEED)
+        val preference: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val podcastFeed = preference.getString(rss_feed, defaultfeed)
+
+            scope.launch {
+                val channel = withContext(Dispatchers.IO) {
+                    podcastFeed?.let { parser.getChannel(it) }
+                }
+
+                val show = podcastFeed?.let {
+                    Feed(
+                        it,
+                        channel?.title.toString(),
+                        channel?.description.toString(),
+                        channel?.link.toString(),
+                        channel?.image.toString(),
+                        10,
+                        10
+                    )
+                }
+
+                show?.let { feedViewModel.insert(it) }
+
             }
+    }
 
-            val show = Feed(
-                PODCAST_FEED,
-                channel.title.toString(),
-                channel.description.toString(),
-                channel.link.toString(),
-                channel.image.toString(),
-                10,
-                10
-                //lista
-            )
-
-            feedViewModel.insert(show)
-
-        }
-
+    companion object {
+        val rss_feed = "RSS Feed"
     }
 }
