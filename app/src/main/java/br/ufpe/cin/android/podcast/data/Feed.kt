@@ -2,6 +2,7 @@ package br.ufpe.cin.android.podcast.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(tableName = "feeds")
 data class Feed(
@@ -13,7 +14,6 @@ data class Feed(
     var imagemURL: String,
     var imagemLargura: Int,
     var imagemAltura: Int
-    //val episodes: List<Episode>
 ) {
     override fun toString(): String {
         return "$titulo => $linkSite"

@@ -48,11 +48,34 @@
                 android:text="TextView" />
 
             <TextView
-                android:id="@+id/archive_episode"
+                android:id="@+id/feed_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
+
+            <LinearLayout
+                android:id="@+id/actions_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_play_circle_outline_24"/>
+
+                <ImageButton
+                    android:id="@+id/pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_pause_circle_outline_24"/>
+
+            </LinearLayout>
+
+
+
         </LinearLayout>
+
     </ScrollView>
 
 

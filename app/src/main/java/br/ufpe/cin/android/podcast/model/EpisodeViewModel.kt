@@ -46,6 +46,12 @@ class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() 
         }
     }
 
+    fun update(episode: Episode) {
+        viewModelScope.launch {
+            repository.update(episode)
+        }
+    }
+
     class EpisodeViewModelFactory(private val repository: EpisodeRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(EpisodeViewModel::class.java)) {

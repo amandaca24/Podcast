@@ -1,11 +1,16 @@
 package br.ufpe.cin.android.podcast.repositories
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import br.ufpe.cin.android.podcast.dao.FeedDAO
+import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.Feed
+import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 
 class FeedRepository(private val feedDAO: FeedDAO) {
     val shows = feedDAO.getAll()
+
+   //val episodes :  = feedDAO.getEpisodesByFeed()
 
     @WorkerThread
     suspend fun insertShow(feed: Feed){
@@ -27,4 +32,6 @@ class FeedRepository(private val feedDAO: FeedDAO) {
     suspend fun findByTitle(title: String) : List<Feed>{
         return feedDAO.getByTitle(title)
     }
+
+
 }

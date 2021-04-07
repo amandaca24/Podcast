@@ -1,37 +1,28 @@
 package br.ufpe.cin.android.podcast
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.ufpe.cin.android.podcast.adapters.EpisodeAdapter
-import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
-import com.prof.rssparser.Parser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import br.ufpe.cin.android.podcast.services.MusicPlayerService
 
 const val EP_LINK = "episode link"
 
 class EpisodeActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityEpisodeBinding
 
-    private val episodeViewModel: EpisodeViewModel by viewModels {
+    private val episodeViewModel : EpisodeViewModel by viewModels{
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModel.EpisodeViewModelFactory(repo)
-    }
-
-    private lateinit var parser : Parser
-    private val scope = CoroutineScope(Dispatchers.Main.immediate)
-    companion object {
-        val PODCAST_FEED = "https://jovemnerd.com.br/feed-nerdcast/"
     }
 
     private lateinit var episodeAdapter: EpisodeAdapter
@@ -58,36 +49,32 @@ class EpisodeActivity : AppCompatActivity() {
             }
         )
 
-        parser = Parser.Builder()
-            .context(this)
-            .cacheExpirationMillis(24L * 60L * 60L * 100L)
-            .build()
 
-    }
 
-    override fun onStart() {
-        super.onStart()
-        scope.launch {
-            val channel = withContext(Dispatchers.IO) {
-                parser.getChannel(PODCAST_FEED)
+        /*val title = intent.getStringExtra("title")
+        if(title != null){
+            feedEpViewModel.getEpisodesByFeed(title)
+
+        }else{
+            Toast.makeText(this,"That's been some kind of error!", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+
+
+
+        feedEpViewModel.current.observe(
+            this,
+            Observer {
+                episodeAdapter.submitList(it.toList())
             }
+        )*/
 
-            channel.articles.forEach { a ->
-                var episode = Episode(
-                    a.link.toString(),
-                    a.title.toString(),
-                    a.description.toString(),
-                    a.sourceUrl.toString(),
-                    a.pubDate.toString())
 
-                episodeViewModel.insert(episode)
-                }
-
-            //episodeAdapter.notifyDataSetChanged()
-            }
     }
 
 }
+
 
 
 

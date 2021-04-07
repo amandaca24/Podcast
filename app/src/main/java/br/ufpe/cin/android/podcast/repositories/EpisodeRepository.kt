@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import br.ufpe.cin.android.podcast.dao.EpisodeDAO
 import br.ufpe.cin.android.podcast.data.Episode
+import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 import kotlinx.coroutines.flow.Flow
 
 class EpisodeRepository(private val episodeDao: EpisodeDAO) {
@@ -32,5 +33,9 @@ class EpisodeRepository(private val episodeDao: EpisodeDAO) {
     @WorkerThread
     suspend fun delete(episode: Episode){
         episodeDao.delete(episode)
+    }
+
+    suspend fun update(episode: Episode){
+        episodeDao.update(episode)
     }
 }

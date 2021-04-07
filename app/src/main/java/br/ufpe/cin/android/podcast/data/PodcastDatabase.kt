@@ -6,11 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import br.ufpe.cin.android.podcast.dao.EpisodeDAO
 import br.ufpe.cin.android.podcast.dao.FeedDAO
+import br.ufpe.cin.android.podcast.dao.FeedWithEpisodesDAO
 
 @Database(entities = [Episode::class, Feed::class], version = 1)
 abstract class PodcastDatabase: RoomDatabase() {
     abstract fun episodeDAO(): EpisodeDAO
     abstract fun feedDAO(): FeedDAO
+    abstract fun feedWithEpisodesDAO(): FeedWithEpisodesDAO
 
     companion object {
         // Implementa padrão Singleton de forma a previnir que múltiplas instâncias do banco de dados abra ao mesmo tempo

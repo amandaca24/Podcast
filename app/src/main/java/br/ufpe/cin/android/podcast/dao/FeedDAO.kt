@@ -2,7 +2,9 @@ package br.ufpe.cin.android.podcast.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.Feed
+import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 
 
 @Dao
@@ -22,6 +24,7 @@ interface FeedDAO {
 
     @Query("SELECT * FROM feeds WHERE urlFeed = :urlFeed")
     suspend fun getByUrlFeed(urlFeed:String) : Feed
+
 
 
 }

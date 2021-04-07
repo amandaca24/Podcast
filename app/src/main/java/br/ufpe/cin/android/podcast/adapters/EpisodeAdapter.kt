@@ -23,11 +23,21 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
                 context.startActivity(intentEp)
             }
 
+            binding.itemAction.setOnClickListener {
+                val context = binding.itemTitle.context
+                val title = binding.itemTitle.text.toString()
+                val intentDownload = Intent(context, EpisodeDetailActivity::class.java).apply {
+                    putExtra("downloaded", "true")
+                    putExtra("titleDownloaded", title)
+                }
+                context.startActivity(intentDownload)
+            }
         }
 
         fun bindTo(episode: Episode){
             binding.itemTitle.text = episode.titulo
             binding.itemDate.text = episode.dataPublicacao
+
         }
 
     }

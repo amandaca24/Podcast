@@ -10,7 +10,8 @@ data class Episode(
     val titulo: String,
     val descricao: String,
     val linkArquivo: String,
-    val dataPublicacao: String
+    val dataPublicacao: String,
+    val feedId : String
 ) {
     override fun toString(): String {
         return "$titulo ($dataPublicacao) => $descricao"

@@ -14,8 +14,10 @@ import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.Feed
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityMainBinding
+import br.ufpe.cin.android.podcast.model.EpisodeViewModel
 import br.ufpe.cin.android.podcast.model.FeedViewModel
 import br.ufpe.cin.android.podcast.model.FeedViewModelFactory
+import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.repositories.FeedRepository
 import com.prof.rssparser.Parser
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         val feedRepo = FeedRepository(PodcastDatabase.getDatabase(this).feedDAO())
         FeedViewModelFactory(feedRepo)
 
+    }
+
+    private val episodeViewModel : EpisodeViewModel by viewModels(){
+        val episodeRepo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
+        EpisodeViewModel.EpisodeViewModelFactory(episodeRepo)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,9 +101,22 @@ class MainActivity : AppCompatActivity() {
                         10,
                         10
                     )
-                }
 
+                }
                 show?.let { feedViewModel.insert(it) }
+
+                channel?.articles?.forEach { a ->
+                    var episode = Episode(
+                        a.link.toString(),
+                        a.title.toString(),
+                        a.description.toString(),
+                        a.sourceUrl.toString(),
+                        a.pubDate.toString(),
+                        channel?.title.toString()
+                    )
+
+                    episodeViewModel.insert(episode)
+                }
 
             }
     }
