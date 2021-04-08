@@ -6,14 +6,13 @@ import androidx.room.Relation
 
 @Entity(tableName = "feeds")
 data class Feed(
-    @PrimaryKey
-    val urlFeed: String,
-    var titulo: String,
-    var descricao: String,
-    var linkSite: String,
-    var imagemURL: String,
-    var imagemLargura: Int,
-    var imagemAltura: Int
+    @PrimaryKey val urlFeed: String,
+    val titulo: String,
+    val descricao: String,
+    val linkSite: String,
+    val imagemURL: String,
+    val imagemLargura: Int,
+    val imagemAltura: Int
 ) {
     override fun toString(): String {
         return "$titulo => $linkSite"

@@ -1,6 +1,7 @@
 package br.ufpe.cin.android.podcast.adapters
 
 import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -23,6 +24,12 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
                 context.startActivity(intentEp)
             }
 
+        }
+
+        fun bindTo(episode: Episode){
+            binding.itemTitle.text = episode.titulo
+            binding.itemDate.text = episode.dataPublicacao
+
             binding.itemAction.setOnClickListener {
                 val context = binding.itemTitle.context
                 val title = binding.itemTitle.text.toString()
@@ -33,13 +40,6 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
                 context.startActivity(intentDownload)
             }
         }
-
-        fun bindTo(episode: Episode){
-            binding.itemTitle.text = episode.titulo
-            binding.itemDate.text = episode.dataPublicacao
-
-        }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {

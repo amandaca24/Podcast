@@ -5,8 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "episodios")
 data class Episode(
-    @PrimaryKey
-    val linkEpisodio: String,
+    @PrimaryKey val linkEpisodio: String,
     val titulo: String,
     val descricao: String,
     val linkArquivo: String,

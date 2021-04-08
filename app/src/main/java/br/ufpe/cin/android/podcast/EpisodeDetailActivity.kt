@@ -1,9 +1,6 @@
 package br.ufpe.cin.android.podcast
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -55,74 +52,83 @@ class EpisodeDetailActivity : AppCompatActivity() {
 
         if(title != null){
             episodeViewModel.findByTitle(title)
+            binding.actionsBtn.visibility = View.INVISIBLE
         }
-        else {
-            if(downloaded == "true" && titleDownload != null){
-                episodeViewModel.findByTitle(titleDownload)
-                //Configurar restrições
 
-                val downloadRequest =
-                    OneTimeWorkRequestBuilder<DownloadEpisodeWorker>()
-                        .setInputData(createInputData())
-                        .build()
+        if (downloaded == "true" && titleDownload != null) {
+            episodeViewModel.findByTitle(titleDownload)
 
-                episodeViewModel.current.observe(
-                    this,
-                    Observer {
-                        binding.titleEpisode.text = it.titulo
-                        binding.dateEpisode.text = it.dataPublicacao
-                        binding.descriptionEpisode.text = it.descricao
-                        binding.linkEpisode.text = it.linkEpisodio
-                        binding.feedId.text = it.feedId
-                    }
-                )
-                val _title = binding.titleEpisode.text.toString()
-                val _dateEpisode = binding.dateEpisode.text.toString()
-                val _description = binding.descriptionEpisode.text.toString()
-                val _linkEpisode = binding.linkEpisode.text.toString()
-                val _linkArchive = downloadRequest.id.toString()
-                val _feedId = binding.feedId.text.toString()
+            episodeViewModel.current.observe(
+                this,
+                Observer {
+                    binding.titleEpisode.text = it.titulo
+                    binding.dateEpisode.text = it.dataPublicacao
+                    binding.descriptionEpisode.text = it.descricao
+                    binding.linkEpisode.text = it.linkEpisodio
+                    binding.feedId.text = it.feedId
+                }
+            )
 
-                val episode = Episode(_linkEpisode, _title, _dateEpisode, _description, _linkArchive, _feedId)
+            setLinkUri(binding.linkEpisode.text.toString())
+            val downloadRequest =
+                OneTimeWorkRequestBuilder<DownloadEpisodeWorker>()
+                    .setInputData(createInputData())
+                    .build()
 
-                episodeViewModel.update(episode)
+            workId = downloadRequest.id.toString()
+            workManager.enqueue(downloadRequest)
+            val liveData = workManager.getWorkInfoByIdLiveData(downloadRequest.id)
 
-                workId = downloadRequest.id.toString()
-                workManager.enqueue(downloadRequest)
-                val liveData = workManager.getWorkInfoByIdLiveData(downloadRequest.id)
-
-                liveData.observe(
-                    this,
-                    Observer {
-                        var success = false
-                        var message = ""
-                        when(it.state){
-                            WorkInfo.State.SUCCEEDED -> {
-                                message = "Download completed"
-                                success = true
-                                binding.actionsBtn.visibility = View.VISIBLE
-                            }
-                            WorkInfo.State.CANCELLED -> {
-                                message = "Download canceled"
-                                //binding.botaoDownload.isEnabled = true
-                            }
-                            WorkInfo.State.BLOCKED -> {
-                                message = "Blocked"
-                            }
-                            WorkInfo.State.FAILED -> {
-                                message = "Download has failed"
-                            }
-                            WorkInfo.State.RUNNING -> {
-                                message = "Running"
-                            }
+            liveData.observe(
+                this,
+                Observer {
+                    var success = false
+                    var message = ""
+                    when (it.state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            message = "Download completed"
+                            success = true
+                            setOutputUri(it.outputData.toString())
+                            binding.actionsBtn.visibility = View.VISIBLE
                         }
-                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                        WorkInfo.State.CANCELLED -> {
+                            message = "Download canceled"
+                            //binding.botaoDownload.isEnabled = true
+                        }
+                        WorkInfo.State.BLOCKED -> {
+                            message = "Blocked"
+                        }
+                        WorkInfo.State.FAILED -> {
+                            message = "Download has failed"
+                        }
+                        WorkInfo.State.RUNNING -> {
+                            message = "Running"
+                        }
                     }
-                )
-            } else {
-                Toast.makeText(this,"That's been some kind of error!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+
+                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                    if (success) {
+                        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+                        serviceIntent.data = Uri.parse(it.outputData.getString(KEY_IMAGEFILE_URI))
+                        startService(serviceIntent)
+                    }
+                }
+            )
+
+            val _title = binding.titleEpisode.text.toString()
+            val _dateEpisode = binding.dateEpisode.text.toString()
+            val _description = binding.descriptionEpisode.text.toString()
+            val _linkEpisode = binding.linkEpisode.text.toString()
+            val _linkArchive = outputUri.toString()
+            val _feedId = binding.feedId.text.toString()
+
+            val episode =
+                Episode(_linkEpisode, _title, _dateEpisode, _description, _linkArchive, _feedId)
+
+            episodeViewModel.update(episode)
+        } else {
+            Toast.makeText(this, "That's been some kind of error!", Toast.LENGTH_SHORT).show()
+            finish()
         }
 
         episodeViewModel.current.observe(
@@ -138,8 +144,6 @@ class EpisodeDetailActivity : AppCompatActivity() {
         binding.play.setOnClickListener {
             if (isBound) {
                 musicPlayerService?.playMusic()
-            } else{
-                startService(serviceIntent)
             }
 
         }

@@ -12,7 +12,6 @@ import br.ufpe.cin.android.podcast.dao.FeedWithEpisodesDAO
 abstract class PodcastDatabase: RoomDatabase() {
     abstract fun episodeDAO(): EpisodeDAO
     abstract fun feedDAO(): FeedDAO
-    abstract fun feedWithEpisodesDAO(): FeedWithEpisodesDAO
 
     companion object {
         // Implementa padrão Singleton de forma a previnir que múltiplas instâncias do banco de dados abra ao mesmo tempo

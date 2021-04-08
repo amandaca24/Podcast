@@ -50,6 +50,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId){
+                R.id.favorite -> {
+                    startActivity(Intent(this, PreferencesActivity::class.java))
+                    true
+                }
+                R.id.search -> {
+                    // Handle search icon press
+                    true
+                }
+                else -> false
+            }
+        }
         
 
         val recyclerViewFeed = binding.feedView
@@ -63,10 +77,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnEpisode.setOnClickListener {
             startActivity(Intent(this, EpisodeActivity::class.java))
-        }
-
-        binding.btnPrefs.setOnClickListener{
-            startActivity(Intent(this, PreferencesActivity::class.java))
         }
 
         feedViewModel.feed.observe(
@@ -93,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
                 val show = podcastFeed?.let {
                     Feed(
-                        it,
+                        podcastFeed.toString(),
                         channel?.title.toString(),
                         channel?.description.toString(),
                         channel?.link.toString(),
@@ -112,12 +122,11 @@ class MainActivity : AppCompatActivity() {
                         a.description.toString(),
                         a.sourceUrl.toString(),
                         a.pubDate.toString(),
-                        channel?.title.toString()
+                        podcastFeed.toString()
                     )
 
                     episodeViewModel.insert(episode)
                 }
-
             }
     }
 
