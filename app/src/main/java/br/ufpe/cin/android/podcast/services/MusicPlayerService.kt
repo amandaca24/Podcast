@@ -1,5 +1,6 @@
 package br.ufpe.cin.android.podcast.services
 
+import android.R.attr.data
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
@@ -8,32 +9,24 @@ import android.os.Binder
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
-import androidx.activity.viewModels
+import android.util.Log
 import androidx.core.app.NotificationCompat
-import br.ufpe.cin.android.podcast.EpisodeActivity
-import br.ufpe.cin.android.podcast.EpisodeDetailActivity
+import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.R
-import br.ufpe.cin.android.podcast.data.Episode
-import br.ufpe.cin.android.podcast.data.PodcastDatabase
-import br.ufpe.cin.android.podcast.model.EpisodeViewModel
-import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.utils.*
 import java.io.File
+
 
 class MusicPlayerService : Service() {
 
     private lateinit var mediaPlayer : MediaPlayer
 
-
     override fun onCreate() {
         super.onCreate()
         //Cria o media player com o arquivo salvo na entidade episódio
 
-        if(KEY_IMAGEFILE_URI != null){
-            val music = Uri.parse(KEY_IMAGEFILE_URI)
-            mediaPlayer = MediaPlayer.create(this, music)
-
-        }
+        /*Log.i("MUSICA = ", music.toString())
+        mediaPlayer = MediaPlayer.create(this, music)*/
 
         //Não vai tocar em loop
         mediaPlayer.isLooping = false
@@ -46,7 +39,7 @@ class MusicPlayerService : Service() {
 
         //Permite ao usuário receber a notificação do serviço que está em execução no sistema
         //Ainda permite voltar à activity em que o serviço está sendo executado
-        val intent = Intent(this, EpisodeDetailActivity::class.java)
+        val intent = Intent(this, DownloadActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val notification : Notification = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -59,6 +52,8 @@ class MusicPlayerService : Service() {
 
         startForeground(NOTIFICATION_ID, notification)
     }
+
+
 
     override fun onDestroy() {
         mediaPlayer.release()

@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import br.ufpe.cin.android.podcast.dao.EpisodeDAO
 import br.ufpe.cin.android.podcast.dao.FeedDAO
-import br.ufpe.cin.android.podcast.dao.FeedWithEpisodesDAO
 
 @Database(entities = [Episode::class, Feed::class], version = 1)
 abstract class PodcastDatabase: RoomDatabase() {

@@ -6,7 +6,7 @@
     <string name="action_play">Play</string>
     <string name="action_pause">Pause</string>
     <string name="initial_link">https://jovemnerd.com.br/feed-nerdcast/</string>
-    <string name="title_activity_episode">Episode Activity</string>
+    <string name="title_activity_episode">Episode</string>
     <string name="add_word">Add</string>
     <string name="preference_username">Username</string>
     <string name="feed_title">Show Title</string>
@@ -14,7 +14,6 @@
     <string name="btn_user_prefs">User Preferences</string>
     <string name="btn_episodes">Episodes</string>
     <string name="content_description_favorite">RSS Favorites</string>
-    <string name="search">Search</string>
     <string name="content_description_search">Search Podcast</string>
     <!--
     This string is used for square devices and overridden by hello_world in
@@ -32,4 +31,13 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="title_activity_download">DownloadActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

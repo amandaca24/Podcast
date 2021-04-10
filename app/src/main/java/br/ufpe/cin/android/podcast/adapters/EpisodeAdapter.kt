@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.EpisodeDetailActivity
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.databinding.ItemfeedBinding
@@ -23,7 +24,6 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
                 intentEp.putExtra("title", title)
                 context.startActivity(intentEp)
             }
-
         }
 
         fun bindTo(episode: Episode){
@@ -33,10 +33,8 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
             binding.itemAction.setOnClickListener {
                 val context = binding.itemTitle.context
                 val title = binding.itemTitle.text.toString()
-                val intentDownload = Intent(context, EpisodeDetailActivity::class.java).apply {
-                    putExtra("downloaded", "true")
-                    putExtra("titleDownloaded", title)
-                }
+                val intentDownload = Intent(context, DownloadActivity::class.java)
+                intentDownload.putExtra("titleDownloaded", title)
                 context.startActivity(intentDownload)
             }
         }

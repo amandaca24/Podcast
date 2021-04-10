@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
@@ -33,7 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     //private lateinit var lista: List<Episode>
 
-    private val defaultfeed = "https://jovemnerd.com.br/feed-nerdcast/"
+    private val defaultfeed =
+        "https://www.omnycontent.com/d/playlist/651a251e-06e1-47e0-9336-ac5a00f41628/220ec2a9-bb93-469e-aad7-acd8013110b7/11cd2462-4550-482d-88ea-acd8013110cf/podcast.rss"
 
     private val feedViewModel: FeedViewModel by viewModels() {
         val feedRepo = FeedRepository(PodcastDatabase.getDatabase(this).feedDAO())
@@ -57,10 +59,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, PreferencesActivity::class.java))
                     true
                 }
-                R.id.search -> {
-                    // Handle search icon press
-                    true
-                }
+
                 else -> false
             }
         }
@@ -104,9 +103,9 @@ class MainActivity : AppCompatActivity() {
                 val show = podcastFeed?.let {
                     Feed(
                         podcastFeed.toString(),
+                        channel?.link.toString(),
                         channel?.title.toString(),
                         channel?.description.toString(),
-                        channel?.link.toString(),
                         channel?.image.toString(),
                         10,
                         10
@@ -117,17 +116,18 @@ class MainActivity : AppCompatActivity() {
 
                 channel?.articles?.forEach { a ->
                     var episode = Episode(
-                        a.link.toString(),
-                        a.title.toString(),
-                        a.description.toString(),
-                        a.sourceUrl.toString(),
-                        a.pubDate.toString(),
-                        podcastFeed.toString()
-                    )
+                    a.link.toString(),
+                    a.title.toString(),
+                    a.description.toString(),
+                    a.sourceName.toString(),
+                    a.pubDate.toString(),
+                    channel.title.toString())
 
                     episodeViewModel.insert(episode)
+                    Log.i("SOURCE NAME = ", episode.linkEpisodio)
                 }
             }
+
     }
 
     companion object {

@@ -21,15 +21,18 @@ class DownloadEpisodeWorker(c : Context, params: WorkerParameters) : Worker(c,pa
         try {
             //pegando o campo associado com KEY_LINK_URI dos dados passados como entrada
             val resourceUri = Uri.parse(inputData.getString(KEY_LINK_URI))
+            Log.i("RESOURCE URI = ", resourceUri.toString())
 
             val root =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             root.mkdirs()
 
-            val output = File(root, resourceUri.lastPathSegment)
+            val output = File(root, resourceUri.lastPathSegment + ".mp3")
             if (output.exists()) {
                 output.delete()
             }
+            Log.i("ARQUIVO DOWNLOAD = ", output.toString())
+            Log.i("LINK DOWNLOAD", resourceUri.toString())
             val url = URL(resourceUri.toString())
             val c = url.openConnection() as HttpURLConnection
             val fos = FileOutputStream(output.path)
