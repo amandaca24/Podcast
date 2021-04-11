@@ -22,7 +22,7 @@ interface EpisodeDAO {
     @Query("SELECT * FROM episodios WHERE linkArquivo LIKE :link" )
     suspend fun findByLinkArchive(link: String) : Episode
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg episode: Episode)
 
     @Delete

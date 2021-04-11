@@ -16,10 +16,10 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
 
         init {
             binding.root.setOnClickListener {
-                val context = binding.feedTitle.context
-                val url = binding.firstEp.toString()
+                val context = binding.feedUrl.context
+                //val url = binding.feedUrl.toString()
                 val intentFeed = Intent(context, EpisodeActivity::class.java)
-                intentFeed.putExtra("url", url)
+                //intentFeed.putExtra("url", url)
                 context.startActivity(intentFeed)
             }
         }
@@ -27,7 +27,7 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
         fun bindTo(feed: Feed){
             binding.feedTitle.text = feed.titulo
             binding.feedDescription.text = feed.descricao
-            binding.firstEp.text = feed.urlFeed
+            binding.feedUrl.text = feed.linkSite
 
         }
 

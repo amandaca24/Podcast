@@ -13,6 +13,8 @@ import java.lang.IllegalArgumentException
 class FeedViewModel(val feedRepo: FeedRepository) : ViewModel() {
     val feed = feedRepo.shows
 
+    val episodes = feedRepo.episodes
+
     var current = MutableLiveData<LiveData<List<Episode>>>()
 
     fun insert(feed: Feed){

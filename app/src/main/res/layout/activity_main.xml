@@ -21,15 +21,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_episodes"
-        android:id="@+id/btn_episode"
-        />
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/feed_view"
         android:layout_width="match_parent"

@@ -11,6 +11,7 @@ import br.ufpe.cin.android.podcast.adapters.EpisodeAdapter
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
+import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
 
@@ -22,7 +23,7 @@ class EpisodeActivity : AppCompatActivity() {
 
     private val episodeViewModel : EpisodeViewModel by viewModels{
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
-        EpisodeViewModel.EpisodeViewModelFactory(repo)
+        EpisodeViewModelFactory(repo)
     }
 
     private lateinit var episodeAdapter: EpisodeAdapter

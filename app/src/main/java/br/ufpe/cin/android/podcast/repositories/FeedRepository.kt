@@ -10,7 +10,9 @@ import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 class FeedRepository(private val feedDAO: FeedDAO) {
     val shows = feedDAO.getAll()
 
-   //val episodes :  = feedDAO.getEpisodesByFeed()
+   val episodes : LiveData<List<FeedWithEpisodes>> = feedDAO.getAllEpisodes()
+
+    //A anotação @WorkerThread garante que os métodos sejam chamados apenas numa worker thread, em vez da Main
 
     @WorkerThread
     suspend fun insertShow(feed: Feed){

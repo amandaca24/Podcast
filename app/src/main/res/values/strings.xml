@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Podcast</string>
-    <string name="item_title">Episode Title</string>
+    <string name="item_title"> Episode Title</string>
     <string name="item_date">15/03/2021</string>
     <string name="action_download">Download</string>
     <string name="action_play">Play</string>
     <string name="action_pause">Pause</string>
     <string name="initial_link">https://jovemnerd.com.br/feed-nerdcast/</string>
-    <string name="title_activity_episode">Episode</string>
+    <string name="title_activity_episode">Episode: </string>
     <string name="add_word">Add</string>
     <string name="preference_username">Username</string>
-    <string name="feed_title">Show Title</string>
-    <string name="rss_feed">RSS Feed</string>
+    <string name="feed_title">Show Title: </string>
+    <string name="rss_feed">RSS Feed:  </string>
     <string name="btn_user_prefs">User Preferences</string>
     <string name="btn_episodes">Episodes</string>
     <string name="content_description_favorite">RSS Favorites</string>

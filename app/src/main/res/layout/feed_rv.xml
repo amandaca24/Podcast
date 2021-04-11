@@ -19,12 +19,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/feed_title"
-                android:text="@string/feed_title" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/img_feed" />
+                android:text="@string/feed_title"
+                android:textStyle="bold"
+                android:textSize="24dp"/>
 
         </LinearLayout>
 
@@ -32,12 +29,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/feed_description"
-            android:text="Descrição"/>
+            android:text="Descrição"
+            android:textStyle="italic"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Episódio"
-            android:id="@+id/first_ep"/>
+            android:id="@+id/feed_url"/>
 
     </LinearLayout>
 

@@ -12,9 +12,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
@@ -23,9 +21,9 @@ import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityDownloadBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
+import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
-import br.ufpe.cin.android.podcast.utils.KEY_IMAGEFILE_URI
 import br.ufpe.cin.android.podcast.utils.KEY_LINK_URI
 
 class DownloadActivity : AppCompatActivity() {
@@ -43,7 +41,7 @@ class DownloadActivity : AppCompatActivity() {
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
-        EpisodeViewModel.EpisodeViewModelFactory(repo)
+        EpisodeViewModelFactory(repo)
     }
 
 
@@ -65,16 +63,18 @@ class DownloadActivity : AppCompatActivity() {
                 binding.archive.text = it.linkEpisodio
 
                 val texturi = binding.archive.text.toString()
-
                 Log.i("TEXTO LINK = ", texturi)
                 downloadEp(texturi)
+
             })
 
 
-
         binding.playBtn.setOnClickListener {
+            val serviceIntent = Intent(this, MusicPlayerService::class.java)
             if (isBound) {
                 musicPlayerService?.playMusic()
+            } else {
+                bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             }
 
         }
@@ -82,16 +82,21 @@ class DownloadActivity : AppCompatActivity() {
         binding.pauseBtn.setOnClickListener {
             if (isBound) {
                 musicPlayerService?.pauseMusic()
+            } else {
+                Toast.makeText(this, "You must play the episode first", Toast.LENGTH_SHORT).show()
             }
-
         }
 
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun downloadEp(uri: String?) {
+    override fun onStart() {
+        binding.updateBtn.setOnClickListener {
+            updateEpisode()
+        }
+        super.onStart()
+    }
 
-        val serviceIntent = Intent(this, MusicPlayerService::class.java)
+    fun downloadEp(uri: String?) {
 
         setLinkUri(uri)
 
@@ -134,36 +139,31 @@ class DownloadActivity : AppCompatActivity() {
 
                 Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
                 if (success) {
-                    val _title = episodeViewModel.current.value?.titulo
-                    val _dateEpisode = episodeViewModel.current.value?.dataPublicacao
-                    val _description = episodeViewModel.current.value?.descricao
-                    val _linkEpisode = episodeViewModel.current.value?.linkEpisodio
-                    val _linkArchive =
-                        Uri.parse(it.outputData.getString(KEY_IMAGEFILE_URI)).toString()
-                    val _feedId = episodeViewModel.current.value?.feedId
+                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
 
-                    val episode =
-                        Episode(
-                            _linkEpisode.toString(),
-                            _title.toString(),
-                            _dateEpisode.toString(),
-                            _description.toString(),
-                            _linkArchive,
-                            _feedId.toString()
-                        )
-
-                    episodeViewModel.update(episode)
-                    finish()
-                    _title?.let { it1 -> episodeViewModel.findByTitle(it1) }
-
-                    var current = episodeViewModel.current.value?.linkArquivo
-                    Log.i("CURRENT = ", current.toString())
-
-                    serviceIntent.data = Uri.parse(current)
-                    bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
                 }
             }
         )
+    }
+
+    fun updateEpisode(){
+        episodeViewModel.current.observe(
+            this,
+            Observer {
+                val episode = Episode(
+                    it.linkEpisodio,
+                    it.titulo,
+                    it.dataPublicacao,
+                    it.descricao,
+                    outputUri.toString(),
+                    it.feedId)
+
+                episodeViewModel.update(episode)
+                finish()
+
+                var current = episode.linkArquivo
+                Log.i("CURRENT = ", current)
+            })
     }
 
     override fun onStop() {

@@ -18,6 +18,7 @@ import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeDetailBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
+import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
 import br.ufpe.cin.android.podcast.utils.KEY_IMAGEFILE_URI
@@ -29,7 +30,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
-        EpisodeViewModel.EpisodeViewModelFactory(repo)
+        EpisodeViewModelFactory(repo)
     }
 
 
@@ -50,6 +51,12 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.dateEpisode.text = it.dataPublicacao
                     binding.descriptionEpisode.text = it.descricao
                     binding.linkEpisode.text = it.linkEpisodio
+
+                    binding.btnDownload.setOnClickListener{
+                        val intent = Intent(this, DownloadActivity::class.java)
+                        intent.putExtra("title", binding.titleEpisode.text.toString())
+                        startActivity(intent)
+                    }
                 })
 
         } else {
@@ -58,11 +65,6 @@ class EpisodeDetailActivity : AppCompatActivity() {
 
         }
 
-        binding.btnDownload.setOnClickListener{
-            val intent = Intent(this, DownloadActivity::class.java)
-            intent.putExtra("title", binding.titleEpisode.text.toString())
-            startActivity(intent)
-        }
 
     }
 

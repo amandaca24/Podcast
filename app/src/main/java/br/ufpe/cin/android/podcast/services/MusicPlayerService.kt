@@ -1,20 +1,15 @@
 package br.ufpe.cin.android.podcast.services
 
-import android.R.attr.data
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Binder
 import android.os.Build
-import android.os.Environment
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.R
 import br.ufpe.cin.android.podcast.utils.*
-import java.io.File
 
 
 class MusicPlayerService : Service() {

@@ -10,7 +10,10 @@ import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 @Dao
 interface FeedDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    //Suspend fun é usado para longas execuções, como pesquisar apenas uma entrada no banco de dados
+    //de forma a esperar que elas sejam concluídas, sem bloqueá-las
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShow(vararg feed: Feed)
 
     @Delete
@@ -24,6 +27,10 @@ interface FeedDAO {
 
     @Query("SELECT * FROM feeds WHERE urlFeed = :urlFeed")
     suspend fun getByUrlFeed(urlFeed:String) : Feed
+
+    @Transaction
+    @Query("SELECT * FROM feeds")
+    fun getAllEpisodes() : LiveData<List<FeedWithEpisodes>>
 
 
 

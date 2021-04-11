@@ -3,6 +3,7 @@ package br.ufpe.cin.android.podcast.adapters
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -30,11 +31,21 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
             binding.itemTitle.text = episode.titulo
             binding.itemDate.text = episode.dataPublicacao
 
+            if(!episode.linkArquivo.isEmpty()){
+                binding.itemPlay.visibility = View.VISIBLE
+                binding.itemAction.visibility = View.INVISIBLE
+            } else{
+                binding.itemAction.visibility = View.VISIBLE
+                binding.itemPlay.visibility = View.INVISIBLE
+            }
+
             binding.itemAction.setOnClickListener {
                 val context = binding.itemTitle.context
                 val title = binding.itemTitle.text.toString()
-                val intentDownload = Intent(context, DownloadActivity::class.java)
-                intentDownload.putExtra("titleDownloaded", title)
+                val intentDownload = Intent(context, DownloadActivity::class.java).apply {
+                    putExtra("titleDownloaded", title)
+
+                }
                 context.startActivity(intentDownload)
             }
         }

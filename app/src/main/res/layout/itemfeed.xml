@@ -22,15 +22,23 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
                 android:text="@string/item_title"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
 
             <ImageButton
                 android:id="@+id/item_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                app:srcCompat="@drawable/ic_baseline_arrow_circle_down_24" />
+                app:srcCompat="@drawable/ic_baseline_arrow_circle_down_24"
+                android:background="@color/teal_600"/>
+
+            <ImageButton
+                android:id="@+id/item_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_play_circle_outline_24"
+                android:background="@color/teal_600" />
 
         </LinearLayout>
 

@@ -2,11 +2,10 @@ package br.ufpe.cin.android.podcast
 
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +15,7 @@ import br.ufpe.cin.android.podcast.data.Feed
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityMainBinding
 import br.ufpe.cin.android.podcast.model.EpisodeViewModel
+import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.model.FeedViewModel
 import br.ufpe.cin.android.podcast.model.FeedViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private val episodeViewModel : EpisodeViewModel by viewModels(){
         val episodeRepo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
-        EpisodeViewModel.EpisodeViewModelFactory(episodeRepo)
+        EpisodeViewModelFactory(episodeRepo)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +74,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        binding.btnEpisode.setOnClickListener {
-            startActivity(Intent(this, EpisodeActivity::class.java))
-        }
-
         feedViewModel.feed.observe(
             this,
             Observer {
@@ -103,15 +99,13 @@ class MainActivity : AppCompatActivity() {
                 val show = podcastFeed?.let {
                     Feed(
                         podcastFeed.toString(),
-                        channel?.link.toString(),
                         channel?.title.toString(),
+                        channel?.link.toString(),
                         channel?.description.toString(),
-                        channel?.image.toString(),
+                        channel?.image?.link.toString(),
                         10,
-                        10
-                    )
+                        10 )}
 
-                }
                 show?.let { feedViewModel.insert(it) }
 
                 channel?.articles?.forEach { a ->
@@ -119,9 +113,9 @@ class MainActivity : AppCompatActivity() {
                     a.link.toString(),
                     a.title.toString(),
                     a.description.toString(),
-                    a.sourceName.toString(),
+                    "",
                     a.pubDate.toString(),
-                    channel.title.toString())
+                    channel?.link.toString())
 
                     episodeViewModel.insert(episode)
                     Log.i("SOURCE NAME = ", episode.linkEpisodio)
