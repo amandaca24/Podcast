@@ -3,13 +3,17 @@ package br.ufpe.cin.android.podcast.services
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Binder
 import android.os.Build
+import android.os.Environment
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.R
 import br.ufpe.cin.android.podcast.utils.*
+import java.io.File
 
 
 class MusicPlayerService : Service() {
@@ -19,9 +23,11 @@ class MusicPlayerService : Service() {
     override fun onCreate() {
         super.onCreate()
         //Cria o media player com o arquivo salvo na entidade episódio
+        val file = File(Environment.DIRECTORY_DOWNLOADS, KEY_IMAGEFILE_URI)
+        val music = Uri.parse(file)
 
-        /*Log.i("MUSICA = ", music.toString())
-        mediaPlayer = MediaPlayer.create(this, music)*/
+        Log.i("MUSICA = ", music.toString())
+        mediaPlayer = MediaPlayer.create(this, music)
 
         //Não vai tocar em loop
         mediaPlayer.isLooping = false

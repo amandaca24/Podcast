@@ -1,7 +1,11 @@
 package br.ufpe.cin.android.podcast.adapters
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +16,14 @@ import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.EpisodeDetailActivity
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.databinding.ItemfeedBinding
+import br.ufpe.cin.android.podcast.services.MusicPlayerService
 
 class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode, EpisodeAdapter.EpisodeViewHolder>(EpisodeDiffCallback) {
 
     class EpisodeViewHolder(private val binding: ItemfeedBinding) : RecyclerView.ViewHolder(binding.root) {
+        internal var isBound = false
+
+        private var musicPlayerService: MusicPlayerService? = null
 
         init {
             binding.root.setOnClickListener {
@@ -48,6 +56,27 @@ class EpisodeAdapter(private val inflater: LayoutInflater) : ListAdapter<Episode
                 }
                 context.startActivity(intentDownload)
             }
+
+            binding.itemPlay.setOnClickListener {
+                val context = binding.itemTitle.context
+                val serviceIntent = Intent(context, MusicPlayerService::class.java)
+                context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+            }
+        }
+
+        private val serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                isBound = true
+
+                val musicBinder = service as MusicPlayerService.MusicBinder
+                musicPlayerService = musicBinder.service
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                isBound = false
+                musicPlayerService = null
+            }
+
         }
     }
 

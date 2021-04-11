@@ -106,6 +106,10 @@ class MainActivity : AppCompatActivity() {
                         10,
                         10 )}
 
+                Log.i("FEED URL = ", show?.urlFeed.toString())
+                Log.i("FEED TITULO = ", show?.titulo.toString())
+                Log.i("FEED DESCRIÇÃO = ", show?.descricao.toString())
+                Log.i("FEED IMAGEM = ", show?.imagemURL.toString())
                 show?.let { feedViewModel.insert(it) }
 
                 channel?.articles?.forEach { a ->
@@ -118,7 +122,12 @@ class MainActivity : AppCompatActivity() {
                     channel?.link.toString())
 
                     episodeViewModel.insert(episode)
-                    Log.i("SOURCE NAME = ", episode.linkEpisodio)
+                    Log.i("EPISÓDIO LINK = ", episode.linkEpisodio)
+                    Log.i("EPISÓDIO TÍTULO = ", episode.titulo)
+                    Log.i("EPISÓDIO DESCRIÇÃO = ", episode.descricao)
+                    Log.i("EPISÓDIO LINK ARQUIVO = ", episode.linkArquivo)
+                    Log.i("EPISÓDIO DATA = ", episode.dataPublicacao)
+                    Log.i("EPISÓDIO FEED = ", episode.feedId)
                 }
             }
 

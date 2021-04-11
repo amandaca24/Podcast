@@ -137,9 +137,9 @@ class DownloadActivity : AppCompatActivity() {
                     }
                 }
 
-                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 if (success) {
-                    Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -153,9 +153,9 @@ class DownloadActivity : AppCompatActivity() {
                 val episode = Episode(
                     it.linkEpisodio,
                     it.titulo,
-                    it.dataPublicacao,
                     it.descricao,
                     outputUri.toString(),
+                    it.dataPublicacao,
                     it.feedId)
 
                 episodeViewModel.update(episode)
@@ -213,8 +213,8 @@ class DownloadActivity : AppCompatActivity() {
         linkUri = uriOrNull(uri)
     }
 
-    internal fun setOutputUri(outputImageUri: String?) {
-        outputUri = uriOrNull(outputImageUri)
+    internal fun setOutputUri(outUri: String?) {
+        outputUri = uriOrNull(outUri)
     }
 }
 
