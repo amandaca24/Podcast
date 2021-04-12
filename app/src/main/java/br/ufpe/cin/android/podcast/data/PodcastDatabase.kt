@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase
 import br.ufpe.cin.android.podcast.dao.EpisodeDAO
 import br.ufpe.cin.android.podcast.dao.FeedDAO
 
+//Classe que cria o Banco de Dados e indica as entidades que formarão as tabelas
+//Também indica o objeto de acesso aos dados (Dao)
 @Database(entities = [Episode::class, Feed::class], version = 1)
 abstract class PodcastDatabase: RoomDatabase() {
     abstract fun episodeDAO(): EpisodeDAO
@@ -18,8 +20,8 @@ abstract class PodcastDatabase: RoomDatabase() {
         private var INSTANCE: PodcastDatabase? = null
 
         fun getDatabase(context: Context): PodcastDatabase {
-            //Se a instância não for null, retorne-a
-            //Se for null, crie a base de dados
+            //Se a instância do BD já foi iniciada, retorne-a
+            //Se não, crie-a
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

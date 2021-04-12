@@ -24,7 +24,7 @@ class MusicPlayerService : Service() {
         super.onCreate()
         //Cria o media player com o arquivo salvo na entidade episódio
         val file = File(Environment.DIRECTORY_DOWNLOADS, KEY_IMAGEFILE_URI)
-        val music = Uri.parse(file)
+        val music = Uri.parse(file.toString())
 
         Log.i("MUSICA = ", music.toString())
         mediaPlayer = MediaPlayer.create(this, music)

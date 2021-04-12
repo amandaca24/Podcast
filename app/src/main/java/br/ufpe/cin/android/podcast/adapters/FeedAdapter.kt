@@ -14,20 +14,18 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
 
     class FeedViewHolder(private val binding: FeedRvBinding) : RecyclerView.ViewHolder(binding.root){
 
-        init {
-            binding.root.setOnClickListener {
-                val context = binding.feedUrl.context
-                //val url = binding.feedUrl.toString()
-                val intentFeed = Intent(context, EpisodeActivity::class.java)
-                //intentFeed.putExtra("url", url)
-                context.startActivity(intentFeed)
-            }
-        }
-
         fun bindTo(feed: Feed){
             binding.feedTitle.text = feed.titulo
             binding.feedDescription.text = feed.descricao
             binding.feedUrl.text = feed.linkSite
+
+            binding.root.setOnClickListener {
+                val context = binding.feedUrl.context
+                val url = feed.urlFeed
+                val intentFeed = Intent(context, EpisodeActivity::class.java)
+                intentFeed.putExtra("url", url)
+                context.startActivity(intentFeed)
+            }
 
         }
 

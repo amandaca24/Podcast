@@ -106,28 +106,33 @@ class MainActivity : AppCompatActivity() {
                         10,
                         10 )}
 
-                Log.i("FEED URL = ", show?.urlFeed.toString())
-                Log.i("FEED TITULO = ", show?.titulo.toString())
-                Log.i("FEED DESCRIÇÃO = ", show?.descricao.toString())
-                Log.i("FEED IMAGEM = ", show?.imagemURL.toString())
                 show?.let { feedViewModel.insert(it) }
 
                 channel?.articles?.forEach { a ->
-                    var episode = Episode(
-                    a.link.toString(),
-                    a.title.toString(),
-                    a.description.toString(),
-                    "",
-                    a.pubDate.toString(),
-                    channel?.link.toString())
+                    var episode = show?.let {
+                        Episode(
+                            a.link.toString(),
+                            a.title.toString(),
+                            a.description.toString(),
+                            "",
+                            a.pubDate.toString(),
+                            it?.urlFeed.toString())
+                    }
 
-                    episodeViewModel.insert(episode)
-                    Log.i("EPISÓDIO LINK = ", episode.linkEpisodio)
-                    Log.i("EPISÓDIO TÍTULO = ", episode.titulo)
-                    Log.i("EPISÓDIO DESCRIÇÃO = ", episode.descricao)
-                    Log.i("EPISÓDIO LINK ARQUIVO = ", episode.linkArquivo)
-                    Log.i("EPISÓDIO DATA = ", episode.dataPublicacao)
-                    Log.i("EPISÓDIO FEED = ", episode.feedId)
+                    if (episode != null) {
+                        episodeViewModel.insert(episode)
+                    }
+
+                    Log.i("FEED URL = ", show?.urlFeed.toString())
+                    Log.i("FEED TITULO = ", show?.titulo.toString())
+                    Log.i("FEED DESCRIÇÃO = ", show?.descricao.toString())
+                    Log.i("FEED IMAGEM = ", show?.imagemURL.toString())
+                    Log.i("EPISÓDIO LINK = ", episode?.linkEpisodio.toString())
+                    Log.i("EPISÓDIO TÍTULO = ", episode?.titulo.toString())
+                    Log.i("EPISÓDIO DESCRIÇÃO = ", episode?.descricao.toString())
+                    Log.i("EPISÓDIO LINK ARQUIVO = ", episode?.linkArquivo.toString())
+                    Log.i("EPISÓDIO DATA = ", episode?.dataPublicacao.toString())
+                    Log.i("EPISÓDIO FEED = ", episode?.feedId.toString())
                 }
             }
 

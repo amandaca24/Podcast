@@ -39,6 +39,7 @@ class DownloadActivity : AppCompatActivity() {
 
     private var musicPlayerService: MusicPlayerService? = null
 
+    //Inicializa o objeto do ViewModel para acessar os dados, garantindo a integridade deles
     private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModelFactory(repo)

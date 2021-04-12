@@ -8,6 +8,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() {
+    //Faz a ponte entre o repositório e as views.
+    // A variável current é usada para armazenar o episódio encontrado no método de busca por título
+    //Dessa forma, podemos manipular os dados do episódio na interface
 
     val allEpisodes = repository.allEpisodes
 
@@ -38,6 +41,10 @@ class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() 
         viewModelScope.launch {
             repository.findByDate(date)
         }
+    }
+
+    fun findByFeed(feed: String) : LiveData<List<Episode>> {
+            return repository.findByFeed(feed)
     }
 
     fun delete(episode: Episode) {

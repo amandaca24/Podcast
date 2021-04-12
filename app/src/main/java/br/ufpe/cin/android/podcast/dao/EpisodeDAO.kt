@@ -7,6 +7,8 @@ import br.ufpe.cin.android.podcast.data.FeedWithEpisodes
 
 @Dao
 interface EpisodeDAO {
+    //Suspend fun indica que os métodos serão executados em co-rotina,
+    //garantindo que eles executem fora da Main Thread.
     @Query("SELECT * FROM episodios ORDER BY titulo ASC")
     fun getAll(): LiveData<List<Episode>>
 
@@ -22,6 +24,10 @@ interface EpisodeDAO {
     @Query("SELECT * FROM episodios WHERE linkArquivo LIKE :link" )
     suspend fun findByLinkArchive(link: String) : Episode
 
+    @Query("SELECT * FROM episodios WHERE feedId LIKE :feed")
+    fun findByFeed(feed: String) : LiveData<List<Episode>>
+
+    //A estratégia aqui é de substituir os dados do episódio em caso de conflito (mesma PK)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg episode: Episode)
 

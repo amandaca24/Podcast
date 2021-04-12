@@ -2,6 +2,7 @@ package br.ufpe.cin.android.podcast
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -21,6 +22,7 @@ class EpisodeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEpisodeBinding
 
+    //Inicializa o objeto do ViewModel para acessar os dados, garantindo a integridade deles
     private val episodeViewModel : EpisodeViewModel by viewModels{
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModelFactory(repo)
@@ -33,9 +35,12 @@ class EpisodeActivity : AppCompatActivity() {
         binding = ActivityEpisodeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Fazendo o binding entre o layout da Activity
         val recyclerViewEpisodes = binding.episodeRV
+        //Iniciando o adapter
         episodeAdapter = EpisodeAdapter(layoutInflater)
 
+        //Aplicando o adapter do recycler view
         recyclerViewEpisodes.apply {
             layoutManager = LinearLayoutManager(this@EpisodeActivity)
             addItemDecoration(DividerItemDecoration(this@EpisodeActivity, DividerItemDecoration.VERTICAL))
@@ -43,38 +48,33 @@ class EpisodeActivity : AppCompatActivity() {
 
         }
 
-        episodeViewModel.allEpisodes.observe(
-            this,
-            Observer {
-                episodeAdapter.submitList(it.toList())
-            }
-        )
+        val feed = intent.getStringExtra("url")
 
-
-
-        /*val title = intent.getStringExtra("title")
-        if(title != null){
-            feedEpViewModel.getEpisodesByFeed(title)
-
-        }else{
-            Toast.makeText(this,"That's been some kind of error!", Toast.LENGTH_SHORT).show()
-            finish()
+        //Traz todos os episódios que estão no Banco de Dados
+        //Fica observando as mudanças nos objetos do tipo LiveData
+        //Cada episódio será alocado numa lista que será submetida ao adapter
+        if (feed != null) {
+            episodeViewModel.findByFeed(feed).observe(
+                this,
+                Observer {
+                    episodeAdapter.submitList(it.toList())
+                }
+            )
+            } else {
+                Toast.makeText(this, "There are no episodes in this feed!", Toast.LENGTH_SHORT).show()
         }
+    }
 
-
-
-
-        feedEpViewModel.current.observe(
+        /*episodeViewModel.allEpisodes.observe(
             this,
             Observer {
                 episodeAdapter.submitList(it.toList())
             }
         )*/
 
-
     }
 
-}
+
 
 
 
