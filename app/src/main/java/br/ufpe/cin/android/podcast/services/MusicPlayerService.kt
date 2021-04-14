@@ -1,6 +1,7 @@
 package br.ufpe.cin.android.podcast.services
 
 import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
@@ -14,27 +15,17 @@ import br.ufpe.cin.android.podcast.DownloadActivity
 import br.ufpe.cin.android.podcast.R
 import br.ufpe.cin.android.podcast.utils.*
 import java.io.File
+import java.io.FileInputStream
 
 
 class MusicPlayerService : Service() {
 
     private lateinit var mediaPlayer : MediaPlayer
+    private var startNum = 0
+
 
     override fun onCreate() {
         super.onCreate()
-        //Cria o media player com o arquivo salvo na entidade episódio
-        val file = File(Environment.DIRECTORY_DOWNLOADS, KEY_IMAGEFILE_URI)
-        val music = Uri.parse(file.toString())
-
-        Log.i("MUSICA = ", music.toString())
-        mediaPlayer = MediaPlayer.create(this, music)
-
-        //Não vai tocar em loop
-        mediaPlayer.isLooping = false
-        //Quando terminar de tocar, vai parar o service
-        mediaPlayer.setOnCompletionListener {
-            stopSelf()
-        }
 
         createChannel()
 
@@ -54,15 +45,23 @@ class MusicPlayerService : Service() {
         startForeground(NOTIFICATION_ID, notification)
     }
 
-
-
-    override fun onDestroy() {
-        mediaPlayer.release()
-        super.onDestroy()
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
+        startNum ++
+        var audio = intent?.getStringExtra("audio").toString()
+        var filePath = FileInputStream(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS).path+"/"+ audio)
+        Log.i("MusicPlayerService", filePath.toString())
+        //mediaPlayer = MediaPlayer.create(this, filePath.fd);
+        mediaPlayer = MediaPlayer()
+        mediaPlayer.setDataSource(filePath.fd);
+        mediaPlayer.prepare();
+        mediaPlayer.start()
+
+        //Sinaliza o que fazer caso o service seja interrompido pelo sistema
+        //START_NOT_STICKY - não é reiniciado automaticamente
+        //START_STICKY - vai ser reiniciado automaticamente assim que possível, com intent nulo
+        //START_REDELIVER_INTENT - vai ser reiniciado automaticamente assim que possível, com último intent usado para comando start
+        return START_NOT_STICKY
     }
 
     fun playMusic(){
@@ -76,6 +75,17 @@ class MusicPlayerService : Service() {
             mediaPlayer.pause()
         }
     }
+
+    fun rewind() {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.seekTo(0)
+        }
+    }
+
+    /*override fun onDestroy() {
+        mediaPlayer.release()
+        super.onDestroy()
+    }*/
 
     override fun onBind(intent: Intent): IBinder {
         return musicBuinder

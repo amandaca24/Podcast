@@ -14,11 +14,13 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
 
     class FeedViewHolder(private val binding: FeedRvBinding) : RecyclerView.ViewHolder(binding.root){
 
+        //Vai ligar os atibutos da entidade Feed aos componentes da view
         fun bindTo(feed: Feed){
             binding.feedTitle.text = feed.titulo
             binding.feedDescription.text = feed.descricao
             binding.feedUrl.text = feed.linkSite
 
+            //Ao clicar no card, vai abrir a lista de episódios do Feed
             binding.root.setOnClickListener {
                 val context = binding.feedUrl.context
                 val url = feed.urlFeed
@@ -26,9 +28,7 @@ class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, Feed
                 intentFeed.putExtra("url", url)
                 context.startActivity(intentFeed)
             }
-
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {

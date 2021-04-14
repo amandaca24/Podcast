@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import android.view.View
@@ -25,6 +26,7 @@ import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
 import br.ufpe.cin.android.podcast.utils.KEY_LINK_URI
+import java.io.File
 
 class DownloadActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDownloadBinding
@@ -45,40 +47,57 @@ class DownloadActivity : AppCompatActivity() {
         EpisodeViewModelFactory(repo)
     }
 
+    companion object {
+        val DOWNLOAD_COMPLETE = "br.ufpe.android.podcast.DOWNLOAD_COMPLETE"
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDownloadBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Pega o título do espisódio que foi passado via intent ao clicar no botão de download
         val titleDownload = intent.getStringExtra("titleDownloaded")
 
+        //Verifica se não está null. Caso positivo, vai procurar o episódio pelo título
         if (titleDownload != null) {
             episodeViewModel.findByTitle(titleDownload)
         }
 
+        //Vai pegar o episódio corrente e fazer o bind nos componentes da view
+        //Também vai fazer o download da mp3 e atualizar o episódio, com o caminho onde ficou baixado
         episodeViewModel.current.observe(
             this,
             Observer {
                 binding.epDownloaded.text = it.titulo
-                binding.archive.text = it.linkEpisodio
+                binding.linkAudio.text = it.audio
 
-                val texturi = binding.archive.text.toString()
+                val texturi = it.audio
                 Log.i("TEXTO LINK = ", texturi)
                 downloadEp(texturi)
 
+                binding.archive.visibility = View.INVISIBLE
+                binding.linkAudio.visibility = View.INVISIBLE
+
             })
+        Log.i("EPISODE ARCHIVE PATH = ", binding.archive.toString())
 
+    }
 
+    override fun onStart() {
+        val serviceIntent = Intent(this, MusicPlayerService::class.java)
+        //serviceIntent.putExtra("audio", binding.archive.toString())
+
+        //Faz o bind com os botões de ação play e pause
         binding.playBtn.setOnClickListener {
-            val serviceIntent = Intent(this, MusicPlayerService::class.java)
             if (isBound) {
                 musicPlayerService?.playMusic()
             } else {
-                bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+                startService(serviceIntent)
             }
-
         }
+
 
         binding.pauseBtn.setOnClickListener {
             if (isBound) {
@@ -87,21 +106,16 @@ class DownloadActivity : AppCompatActivity() {
                 Toast.makeText(this, "You must play the episode first", Toast.LENGTH_SHORT).show()
             }
         }
-
-    }
-
-    override fun onStart() {
-        binding.updateBtn.setOnClickListener {
-            updateEpisode()
-        }
         super.onStart()
     }
+
 
     fun downloadEp(uri: String?) {
 
         setLinkUri(uri)
 
         Log.i("URI BY OBSERVER = ", linkUri.toString())
+
 
         val downloadRequest =
             OneTimeWorkRequestBuilder<DownloadEpisodeWorker>()
@@ -123,6 +137,7 @@ class DownloadActivity : AppCompatActivity() {
                         success = true
                         setOutputUri(it.outputData.toString())
                         binding.actionsBtn.visibility = View.VISIBLE
+                        sendBroadcast(Intent(DOWNLOAD_COMPLETE))
                     }
                     WorkInfo.State.CANCELLED -> {
                         message = "Download canceled"
@@ -140,14 +155,18 @@ class DownloadActivity : AppCompatActivity() {
 
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 if (success) {
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    updateEpisode()
+                    val intentPlay = Intent(this, DownloadActivity::class.java)
+                    intentPlay.putExtra("play", true)
+                    startActivity(intentPlay)
+                    Toast.makeText(this, "Episode updated and ready to play", Toast.LENGTH_SHORT).show()
 
                 }
             }
         )
     }
 
-    fun updateEpisode(){
+    private fun updateEpisode(){
         episodeViewModel.current.observe(
             this,
             Observer {
@@ -156,6 +175,7 @@ class DownloadActivity : AppCompatActivity() {
                     it.titulo,
                     it.descricao,
                     outputUri.toString(),
+                    it.audio,
                     it.dataPublicacao,
                     it.feedId)
 

@@ -1,6 +1,9 @@
 package br.ufpe.cin.android.podcast
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -65,14 +68,25 @@ class EpisodeActivity : AppCompatActivity() {
         }
     }
 
-        /*episodeViewModel.allEpisodes.observe(
-            this,
-            Observer {
-                episodeAdapter.submitList(it.toList())
-            }
-        )*/
-
+    //    AGUARDA O RETORNO DO DOWNLOAD COMPLETO
+    private val onDownloadComplete = object : BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Toast.makeText(binding.root.context, "Download done", Toast.LENGTH_SHORT).show()
+            episodeAdapter.notifyDataSetChanged()
+        }
     }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(onDownloadComplete, IntentFilter(DownloadActivity.DOWNLOAD_COMPLETE))
+    }
+
+    override fun onPause() {
+        unregisterReceiver(onDownloadComplete)
+        super.onPause()
+    }
+
+}
 
 
 

@@ -10,6 +10,7 @@ data class Episode(
     val titulo: String,
     val descricao: String,
     val linkArquivo: String,
+    val audio : String,
     val dataPublicacao: String,
     val feedId : String
 ) {

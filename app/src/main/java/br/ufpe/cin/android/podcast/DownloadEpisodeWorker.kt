@@ -1,6 +1,7 @@
 package br.ufpe.cin.android.podcast
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -27,7 +28,7 @@ class DownloadEpisodeWorker(c : Context, params: WorkerParameters) : Worker(c,pa
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             root.mkdirs()
 
-            val output = File(root, resourceUri.lastPathSegment + ".mp3")
+            val output = File(root, resourceUri.lastPathSegment)
             if (output.exists()) {
                 output.delete()
             }

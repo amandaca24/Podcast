@@ -10,7 +10,7 @@
     <string name="add_word">Add</string>
     <string name="preference_username">Username</string>
     <string name="feed_title">Show Title: </string>
-    <string name="rss_feed">RSS Feed:  </string>
+    <string name="rss_feed">RSS Feed</string>
     <string name="btn_user_prefs">User Preferences</string>
     <string name="btn_episodes">Episodes</string>
     <string name="content_description_favorite">RSS Favorites</string>

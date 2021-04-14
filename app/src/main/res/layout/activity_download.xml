@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/download_title" />
 
     <TextView
-        android:id="@+id/archive"
+        android:id="@+id/link_audio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -43,22 +43,22 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/action_download"
-        app:layout_constraintBottom_toTopOf="@+id/update_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/actions_btn" />
 
-    <Button
-        android:id="@+id/update_btn"
+    <TextView
+        android:id="@+id/archive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Update"
+        android:text="Archive"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/archive" />
+        app:layout_constraintTop_toBottomOf="@id/link_audio" />
+
 
     <LinearLayout
         android:id="@+id/actions_btn"
@@ -67,9 +67,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:background="@color/teal_600"
-        app:layout_constraintBottom_toTopOf="@+id/archive"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ep_downloaded">

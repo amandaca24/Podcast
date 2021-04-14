@@ -4,11 +4,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.android.podcast.adapters.FeedAdapter
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.Feed
@@ -48,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         EpisodeViewModelFactory(episodeRepo)
     }
 
+    companion object {
+        val rss_feed = "RSS Feed"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -63,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        
+
 
         val recyclerViewFeed = binding.feedView
         val feedAdapter = FeedAdapter(layoutInflater)
@@ -80,65 +87,94 @@ class MainActivity : AppCompatActivity() {
                 feedAdapter.submitList(it.toList())
             })
 
+        //Apaga o podcast arrastando o item da lista dinâmica
+        val mIth = ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+                ItemTouchHelper.LEFT
+            ){override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
+            ): Boolean {
+                return true // true if moved, false otherwise
+            }
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    scope.launch(Dispatchers.IO) {
+                        feedViewModel.delete(feedAdapter.currentList[viewHolder.adapterPosition])
+                    }
+                    Toast.makeText(this@MainActivity, "Podcast deleted!", Toast.LENGTH_SHORT).show()
+                }
+
+    })
+    mIth.attachToRecyclerView(recyclerViewFeed)
+
         parser = Parser.Builder()
             .context(this)
             .cacheExpirationMillis(24L * 60L * 60L * 100L)
             .build()
+
     }
 
     override fun onStart() {
-        super.onStart()
+        //Nesta parte é feito o parser do feed.
+        //Primeiro pega o link das preferências do usuário (se não for indicado um, pega o link default indicado acima)
+        //O parser pega o link e permite pegar os dados do xml. Assim, é possível salvar as informações no Banco de Dados
         val preference: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val podcastFeed = preference.getString(rss_feed, defaultfeed)
 
-            scope.launch {
-                val channel = withContext(Dispatchers.IO) {
-                    podcastFeed?.let { parser.getChannel(it) }
-                }
-
-                val show = podcastFeed?.let {
-                    Feed(
-                        podcastFeed.toString(),
-                        channel?.title.toString(),
-                        channel?.link.toString(),
-                        channel?.description.toString(),
-                        channel?.image?.link.toString(),
-                        10,
-                        10 )}
-
-                show?.let { feedViewModel.insert(it) }
-
-                channel?.articles?.forEach { a ->
-                    var episode = show?.let {
-                        Episode(
-                            a.link.toString(),
-                            a.title.toString(),
-                            a.description.toString(),
-                            "",
-                            a.pubDate.toString(),
-                            it?.urlFeed.toString())
-                    }
-
-                    if (episode != null) {
-                        episodeViewModel.insert(episode)
-                    }
-
-                    Log.i("FEED URL = ", show?.urlFeed.toString())
-                    Log.i("FEED TITULO = ", show?.titulo.toString())
-                    Log.i("FEED DESCRIÇÃO = ", show?.descricao.toString())
-                    Log.i("FEED IMAGEM = ", show?.imagemURL.toString())
-                    Log.i("EPISÓDIO LINK = ", episode?.linkEpisodio.toString())
-                    Log.i("EPISÓDIO TÍTULO = ", episode?.titulo.toString())
-                    Log.i("EPISÓDIO DESCRIÇÃO = ", episode?.descricao.toString())
-                    Log.i("EPISÓDIO LINK ARQUIVO = ", episode?.linkArquivo.toString())
-                    Log.i("EPISÓDIO DATA = ", episode?.dataPublicacao.toString())
-                    Log.i("EPISÓDIO FEED = ", episode?.feedId.toString())
-                }
+        scope.launch {
+            val channel = withContext(Dispatchers.IO) {
+                podcastFeed?.let { parser.getChannel(it) }
             }
 
+            val show = podcastFeed?.let {
+                Feed(
+                    podcastFeed.toString(),
+                    channel?.title.toString(),
+                    channel?.link.toString(),
+                    channel?.description.toString(),
+                    channel?.image?.link.toString(),
+                    10,
+                    10 )}
+
+            show?.let { feedViewModel.insert(it) }
+
+            channel?.articles?.forEach { a ->
+                var episode = show?.let {
+                    Episode(
+                        a.link.toString(),
+                        a.title.toString(),
+                        a.description.toString(),
+                        "",
+                        a.audio.toString(),
+                        a.pubDate.toString(),
+                        it?.urlFeed.toString())
+                }
+
+                if (episode != null) {
+                    episodeViewModel.insert(episode)
+                }
+
+                Log.i("FEED URL = ", show?.urlFeed.toString())
+                Log.i("FEED TITULO = ", show?.titulo.toString())
+                Log.i("FEED DESCRIÇÃO = ", show?.descricao.toString())
+                Log.i("FEED IMAGEM = ", show?.imagemURL.toString())
+                Log.i("EPISÓDIO LINK = ", episode?.linkEpisodio.toString())
+                Log.i("EPISÓDIO TÍTULO = ", episode?.titulo.toString())
+                Log.i("EPISÓDIO DESCRIÇÃO = ", episode?.descricao.toString())
+                Log.i("EPISÓDIO LINK ARQUIVO = ", episode?.linkArquivo.toString())
+                Log.i("EPISÓDIO DATA = ", episode?.dataPublicacao.toString())
+                Log.i("EPISÓDIO FEED = ", episode?.feedId.toString())
+                Log.i("EPISODIO AUDIO = ", episode?.audio.toString())
+            }
+
+            //Limpa o link nas preferências
+            preference.edit().clear().apply()
+        }
+
+        super.onStart()
+
+
     }
 
-    companion object {
-        val rss_feed = "RSS Feed"
-    }
 }
