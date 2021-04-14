@@ -68,7 +68,7 @@ class EpisodeActivity : AppCompatActivity() {
         }
     }
 
-    //    AGUARDA O RETORNO DO DOWNLOAD COMPLETO
+    //Recebe um broadcast informando que o download foi concluído e vai avisar ao adapter que houve modificação nos dados
     private val onDownloadComplete = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             Toast.makeText(binding.root.context, "Download done", Toast.LENGTH_SHORT).show()
@@ -76,9 +76,10 @@ class EpisodeActivity : AppCompatActivity() {
         }
     }
 
+    //Retoma o download no caso de sair da activity
     override fun onResume() {
         super.onResume()
-        registerReceiver(onDownloadComplete, IntentFilter(DownloadActivity.DOWNLOAD_COMPLETE))
+        registerReceiver(onDownloadComplete, IntentFilter(EpisodeDetailActivity.DOWNLOAD_COMPLETE))
     }
 
     override fun onPause() {

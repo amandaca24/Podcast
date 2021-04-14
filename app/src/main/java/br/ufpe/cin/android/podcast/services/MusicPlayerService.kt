@@ -1,20 +1,17 @@
 package br.ufpe.cin.android.podcast.services
 
 import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import br.ufpe.cin.android.podcast.DownloadActivity
+import br.ufpe.cin.android.podcast.EpisodeDetailActivity
 import br.ufpe.cin.android.podcast.R
 import br.ufpe.cin.android.podcast.utils.*
-import java.io.File
 import java.io.FileInputStream
 
 
@@ -31,7 +28,7 @@ class MusicPlayerService : Service() {
 
         //Permite ao usuário receber a notificação do serviço que está em execução no sistema
         //Ainda permite voltar à activity em que o serviço está sendo executado
-        val intent = Intent(this, DownloadActivity::class.java)
+        val intent = Intent(this, EpisodeDetailActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val notification : Notification = NotificationCompat.Builder(this, CHANNEL_ID)

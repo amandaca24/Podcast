@@ -1,19 +1,21 @@
 package br.ufpe.cin.android.podcast
 
-import android.content.*
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import br.ufpe.cin.android.podcast.data.Episode
 import br.ufpe.cin.android.podcast.data.PodcastDatabase
 import br.ufpe.cin.android.podcast.databinding.ActivityEpisodeDetailBinding
@@ -21,12 +23,26 @@ import br.ufpe.cin.android.podcast.model.EpisodeViewModel
 import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
-import br.ufpe.cin.android.podcast.utils.KEY_IMAGEFILE_URI
 import br.ufpe.cin.android.podcast.utils.KEY_LINK_URI
 
 class EpisodeDetailActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityEpisodeDetailBinding
+
+    //Objeto para o Broadcast Receiver
+    companion object {
+        val DOWNLOAD_COMPLETE = "br.ufpe.android.podcast.DOWNLOAD_COMPLETE"
+    }
+
+    private var linkUri: Uri? = null
+    private var outputUri: Uri? = null
+    private lateinit var workId: String
+
+    private val workManager = WorkManager.getInstance(this)
+
+    internal var isBound = false
+
+    private var musicPlayerService: MusicPlayerService? = null
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
@@ -39,9 +55,15 @@ class EpisodeDetailActivity : AppCompatActivity() {
         binding = ActivityEpisodeDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val serviceIntent = Intent(this, MusicPlayerService::class.java)
+        //Pega o título do espisódio que foi passado via intent ao clicar no card ou no botão download
         val title = intent.getStringExtra("title")
+        val detail = intent.getStringExtra("detail")
 
-        if(title != null){
+        //Verifica se não está null e procura o episódio com o título informado
+        //Fará o binding com os componentes da view
+        //Esta condicional verifica se a intent veio de clicar no card. Assim, não vai baixar o mp3 do episódio
+        if(title != null && detail.equals("true")){
             episodeViewModel.findByTitle(title)
 
             episodeViewModel.current.observe(
@@ -52,20 +74,178 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.descriptionEpisode.text = it.descricao
                     binding.linkEpisode.text = it.linkEpisodio
 
-                    binding.btnDownload.setOnClickListener{
-                        val intent = Intent(this, DownloadActivity::class.java)
-                        intent.putExtra("title", binding.titleEpisode.text.toString())
-                        startActivity(intent)
+                    if(it.linkArquivo.isNotEmpty()){
+                        binding.actionsBtn.visibility = View.VISIBLE
                     }
+                    binding.actionsBtn.visibility = View.INVISIBLE
+
+                })
+            //Vai trabalhar a visibilidade dos botões de play e pause dinamicamente
+
+        } else if(title != null && detail.equals("false")){
+            episodeViewModel.findByTitle(title)
+
+            episodeViewModel.current.observe(
+                this,
+                Observer {
+                    binding.titleEpisode.text = it.titulo
+                    binding.dateEpisode.text = it.dataPublicacao
+                    binding.descriptionEpisode.text = it.descricao
+                    binding.linkEpisode.text = it.linkEpisodio
+
+                    downloadEp(it.audio)
+                    Log.i("EPISODE AUDIO = ", it.audio)
+
                 })
 
         } else {
             Toast.makeText(this, "That's been some kind of error!", Toast.LENGTH_SHORT).show()
             finish()
+        }
 
+        binding.playBtn.setOnClickListener {
+            serviceIntent.putExtra("audio", episodeViewModel.current.value?.linkArquivo)
+            if (isBound) {
+                musicPlayerService?.playMusic()
+            } else {
+                startService(serviceIntent)
+            }
         }
 
 
+        binding.pauseBtn.setOnClickListener {
+            if (isBound) {
+                musicPlayerService?.pauseMusic()
+            } else {
+                Toast.makeText(this, "You must play the episode first", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun downloadEp(uri: String?) {
+
+        setLinkUri(uri)
+
+        Log.i("URI BY OBSERVER = ", linkUri.toString())
+
+
+        val downloadRequest =
+            OneTimeWorkRequestBuilder<DownloadEpisodeWorker>()
+                .setInputData(createInputData())
+                .build()
+
+        workId = downloadRequest.id.toString()
+        workManager.enqueue(downloadRequest)
+        val liveData = workManager.getWorkInfoByIdLiveData(downloadRequest.id)
+
+        liveData.observe(
+            this,
+            Observer {
+                var success = false
+                var message = ""
+                when (it.state) {
+                    WorkInfo.State.SUCCEEDED -> {
+                        message = "Download completed"
+                        success = true
+                        setOutputUri(it.outputData.toString())
+                        binding.actionsBtn.visibility = View.VISIBLE
+                        sendBroadcast(Intent(DOWNLOAD_COMPLETE))
+                    }
+                    WorkInfo.State.CANCELLED -> {
+                        message = "Download canceled"
+                    }
+                    WorkInfo.State.BLOCKED -> {
+                        message = "Blocked"
+                    }
+                    WorkInfo.State.FAILED -> {
+                        message = "Download has failed"
+                    }
+                    WorkInfo.State.RUNNING -> {
+                        message = "Running"
+                    }
+                }
+
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                if (success) {
+                    updateEpisode()
+                    binding.actionsBtn.visibility = View.VISIBLE
+                    sendBroadcast(Intent(DOWNLOAD_COMPLETE))
+
+                }
+            }
+        )
+    }
+
+    private fun updateEpisode(){
+        episodeViewModel.current.observe(
+            this,
+            Observer {
+                val episode = Episode(
+                    it.linkEpisodio,
+                    it.titulo,
+                    it.descricao,
+                    outputUri.toString(),
+                    it.audio,
+                    it.dataPublicacao,
+                    it.feedId)
+
+                episodeViewModel.update(episode)
+                finish()
+
+                var current = episode.linkArquivo
+                Log.i("CURRENT = ", current)
+            })
+    }
+
+    override fun onStop() {
+        if (isBound) {
+            unbindService(serviceConnection)
+            isBound = false
+        }
+        super.onStop()
+
+    }
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isBound = true
+
+            val musicBinder = service as MusicPlayerService.MusicBinder
+            musicPlayerService = musicBinder.service
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBound = false
+            musicPlayerService = null
+        }
+
+    }
+
+    fun createInputData(): Data {
+        val builder = Data.Builder()
+        linkUri?.let {
+            builder.putString(KEY_LINK_URI, it.toString())
+        }
+        return builder.build()
+    }
+
+    private fun uriOrNull(uriString: String?): Uri? {
+        return if (!uriString.isNullOrEmpty()) {
+            Uri.parse(uriString)
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Setters
+     */
+    internal fun setLinkUri(uri: String?) {
+        linkUri = uriOrNull(uri)
+    }
+
+    internal fun setOutputUri(outUri: String?) {
+        outputUri = uriOrNull(outUri)
     }
 
 }

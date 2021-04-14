@@ -18,6 +18,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class DownloadEpisodeWorker(c : Context, params: WorkerParameters) : Worker(c,params) {
+
     override fun doWork(): Result {
         try {
             //pegando o campo associado com KEY_LINK_URI dos dados passados como entrada
