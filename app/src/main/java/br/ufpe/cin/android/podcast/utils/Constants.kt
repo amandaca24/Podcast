@@ -2,11 +2,13 @@ package br.ufpe.cin.android.podcast.utils
 
 // Notification Channel constants
 
-@JvmField val VERBOSE_NOTIFICATION_CHANNEL_NAME: CharSequence =
-        "Verbose WorkManager Notifications"
+@JvmField
+val VERBOSE_NOTIFICATION_CHANNEL_NAME: CharSequence =
+    "Verbose WorkManager Notifications"
 const val VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION =
-        "Shows notifications whenever work starts"
-@JvmField val NOTIFICATION_TITLE: CharSequence = "WorkRequest Iniciando"
+    "Shows notifications whenever work starts"
+@JvmField
+val NOTIFICATION_TITLE: CharSequence = "WorkRequest Iniciando"
 const val CHANNEL_ID = "VERBOSE_NOTIFICATION"
 const val NOTIFICATION_ID = 1
 

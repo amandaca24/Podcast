@@ -31,8 +31,8 @@ import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityMainBinding
-    private lateinit var parser : Parser
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var parser: Parser
     private val scope = CoroutineScope(Dispatchers.Main.immediate)
 
     //private lateinit var lista: List<Episode>
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private val episodeViewModel : EpisodeViewModel by viewModels(){
+    private val episodeViewModel: EpisodeViewModel by viewModels() {
         val episodeRepo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModelFactory(episodeRepo)
     }
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId){
+            when (menuItem.itemId) {
                 R.id.favorite -> {
                     startActivity(Intent(this, PreferencesActivity::class.java))
                     true
@@ -92,12 +92,14 @@ class MainActivity : AppCompatActivity() {
             object : ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP or ItemTouchHelper.DOWN,
                 ItemTouchHelper.LEFT
-            ){override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
-            ): Boolean {
-                return true // true if moved, false otherwise
-            }
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return true // true if moved, false otherwise
+                }
+
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     scope.launch(Dispatchers.IO) {
                         feedViewModel.delete(feedAdapter.currentList[viewHolder.adapterPosition])
@@ -105,17 +107,20 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Podcast deleted!", Toast.LENGTH_SHORT).show()
                 }
 
-    })
-    mIth.attachToRecyclerView(recyclerViewFeed)
+            })
+        mIth.attachToRecyclerView(recyclerViewFeed)
 
         parser = Parser.Builder()
             .context(this)
             .cacheExpirationMillis(24L * 60L * 60L * 100L)
             .build()
 
+        feedAdapter.notifyDataSetChanged()
+
     }
 
     override fun onStart() {
+        super.onStart()
         //Nesta parte é feito o parser do feed.
         //Primeiro pega o link das preferências do usuário (se não for indicado um, pega o link default indicado acima)
         //O parser pega o link e permite pegar os dados do xml. Assim, é possível salvar as informações no Banco de Dados
@@ -133,12 +138,11 @@ class MainActivity : AppCompatActivity() {
                     channel?.title.toString(),
                     channel?.link.toString(),
                     channel?.description.toString(),
-                    channel?.image?.link.toString(),
-                    10,
-                    10 )}
+                    channel?.image?.url.toString(),
+                    160,
+                    160 )}
 
             show?.let { feedViewModel.insert(it) }
-
             channel?.articles?.forEach { a ->
                 var episode = show?.let {
                     Episode(
@@ -148,12 +152,10 @@ class MainActivity : AppCompatActivity() {
                         "",
                         a.audio.toString(),
                         a.pubDate.toString(),
-                        it?.urlFeed.toString())
-                }
+                        it?.urlFeed.toString() )}
 
                 if (episode != null) {
-                    episodeViewModel.insert(episode)
-                }
+                    episodeViewModel.insert(episode) }
 
                 Log.i("FEED URL = ", show?.urlFeed.toString())
                 Log.i("FEED TITULO = ", show?.titulo.toString())
@@ -171,10 +173,6 @@ class MainActivity : AppCompatActivity() {
             //Limpa o link nas preferências
             preference.edit().clear().apply()
         }
-
-        super.onStart()
-
-
     }
 
 }

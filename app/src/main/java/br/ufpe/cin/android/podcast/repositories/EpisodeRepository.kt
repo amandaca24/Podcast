@@ -16,21 +16,22 @@ class EpisodeRepository(private val episodeDao: EpisodeDAO) {
     //de forma a não atrapalhar a visualização da interface do usuário
 
     @WorkerThread
-    suspend fun findByPk(pk: String){
+    suspend fun findByPk(pk: String) {
         episodeDao.findByPk(pk)
     }
 
     @WorkerThread
-    suspend fun findByTitle(title: String) : Episode {
+    suspend fun findByTitle(title: String): Episode {
         return episodeDao.findByTitle(title)
     }
+
     @WorkerThread
-    suspend fun findByDate(date: String){
+    suspend fun findByDate(date: String) {
         episodeDao.findByDate(date)
     }
 
     @WorkerThread
-    fun findByFeed(feed: String) : LiveData<List<Episode>> {
+    fun findByFeed(feed: String): LiveData<List<Episode>> {
         return episodeDao.findByFeed(feed)
     }
 
@@ -41,12 +42,12 @@ class EpisodeRepository(private val episodeDao: EpisodeDAO) {
     }
 
     @WorkerThread
-    suspend fun delete(episode: Episode){
+    suspend fun delete(episode: Episode) {
         episodeDao.delete(episode)
     }
 
     @WorkerThread
-    suspend fun update(episode: Episode){
+    suspend fun update(episode: Episode) {
         episodeDao.update(episode)
     }
 }

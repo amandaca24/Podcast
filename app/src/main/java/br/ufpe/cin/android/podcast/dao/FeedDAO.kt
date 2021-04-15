@@ -20,18 +20,17 @@ interface FeedDAO {
     suspend fun delete(feed: Feed)
 
     @Query("SELECT * FROM feeds ORDER BY titulo ASC")
-    fun getAll() : LiveData<List<Feed>>
+    fun getAll(): LiveData<List<Feed>>
 
     @Query("SELECT * FROM feeds WHERE titulo LIKE :title")
-    suspend fun getByTitle(title:String) : List<Feed>
+    suspend fun getByTitle(title: String): List<Feed>
 
     @Query("SELECT * FROM feeds WHERE urlFeed = :urlFeed")
-    suspend fun getByUrlFeed(urlFeed:String) : Feed
+    suspend fun getByUrlFeed(urlFeed: String): Feed
 
     @Transaction
     @Query("SELECT * FROM feeds")
-    fun getAllEpisodes() : LiveData<List<FeedWithEpisodes>>
-
+    fun getAllEpisodes(): LiveData<List<FeedWithEpisodes>>
 
 
 }

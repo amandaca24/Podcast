@@ -10,7 +10,7 @@ import br.ufpe.cin.android.podcast.dao.FeedDAO
 //Classe que cria o Banco de Dados e indica as entidades que formarão as tabelas
 //Também indica o objeto de acesso aos dados (Dao)
 @Database(entities = [Episode::class, Feed::class], version = 1)
-abstract class PodcastDatabase: RoomDatabase() {
+abstract class PodcastDatabase : RoomDatabase() {
     abstract fun episodeDAO(): EpisodeDAO
     abstract fun feedDAO(): FeedDAO
 

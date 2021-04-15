@@ -17,8 +17,9 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
-class DownloadEpisodeWorker(c : Context, params: WorkerParameters) : Worker(c,params) {
-
+class DownloadEpisodeWorker(c: Context, params: WorkerParameters) : Worker(c, params) {
+    //Este método vai fazer o trabalho de baixar um arquivo localmente.
+    //Ele será chamado na activity de EpisodeDetail para fazer o download
     override fun doWork(): Result {
         try {
             //pegando o campo associado com KEY_LINK_URI dos dados passados como entrada

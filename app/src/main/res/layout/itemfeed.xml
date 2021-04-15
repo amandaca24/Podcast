@@ -22,16 +22,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
                 android:text="@string/item_title"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/teal_500"/>
 
 
             <ImageButton
                 android:id="@+id/item_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:srcCompat="@drawable/ic_baseline_arrow_circle_down_24"
-                android:background="@color/teal_600"/>
+                android:background="@color/teal_500"/>
 
         </LinearLayout>
 
@@ -40,7 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/item_date"
-            android:textSize="12sp" />
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="@color/cardview_dark_background"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

@@ -1,8 +1,6 @@
 package br.ufpe.cin.android.podcast
 
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
@@ -27,7 +25,7 @@ import br.ufpe.cin.android.podcast.utils.KEY_LINK_URI
 
 class EpisodeDetailActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityEpisodeDetailBinding
+    private lateinit var binding: ActivityEpisodeDetailBinding
 
     //Objeto para o Broadcast Receiver
     companion object {
@@ -63,7 +61,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
         //Verifica se não está null e procura o episódio com o título informado
         //Fará o binding com os componentes da view
         //Esta condicional verifica se a intent veio de clicar no card. Assim, não vai baixar o mp3 do episódio
-        if(title != null && detail.equals("true")){
+        if (title != null && detail.equals("true")) {
             episodeViewModel.findByTitle(title)
 
             episodeViewModel.current.observe(
@@ -74,15 +72,20 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.descriptionEpisode.text = it.descricao
                     binding.linkEpisode.text = it.linkEpisodio
 
-                    if(it.linkArquivo.isNotEmpty()){
+                    if (it.linkArquivo != "") {
                         binding.actionsBtn.visibility = View.VISIBLE
+                        val i = Intent(
+                            binding.root.context,
+                            MusicPlayerService::class.java
+                        )
+                        i.putExtra("audio", it.linkArquivo)
                     }
                     binding.actionsBtn.visibility = View.INVISIBLE
 
                 })
             //Vai trabalhar a visibilidade dos botões de play e pause dinamicamente
 
-        } else if(title != null && detail.equals("false")){
+        } else if (title != null && detail.equals("false")) {
             episodeViewModel.findByTitle(title)
 
             episodeViewModel.current.observe(
@@ -103,6 +106,8 @@ class EpisodeDetailActivity : AppCompatActivity() {
             finish()
         }
 
+        //Vai ver se o serviço já está funcionando.
+        //Se não, vai inicializá-lo
         binding.playBtn.setOnClickListener {
             serviceIntent.putExtra("audio", episodeViewModel.current.value?.linkArquivo)
             if (isBound) {
@@ -113,6 +118,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
         }
 
 
+        //Ao clicar, se o episódio estiver tocando, vai pausar
         binding.pauseBtn.setOnClickListener {
             if (isBound) {
                 musicPlayerService?.pauseMusic()
@@ -122,6 +128,11 @@ class EpisodeDetailActivity : AppCompatActivity() {
         }
     }
 
+    //Este é o método que vai chamar o DownloadEpisodeWorker e passará o atributo uri que será baixado localmente.
+    //Com a variável workManager, que vai enfileirar o processo de download, é possível acompanhar o processo
+    //feito pela liveData e lançar uma mensagem para o usuário de acordo o estado do download.
+    //Em caso de sucesso, vai atribuir a saída a uma variável, que será usada para fazer a atualização do atributo linkArquivo
+    //Também vai enviar um broadcast avisando que o download foi realizado com sucesso
     fun downloadEp(uri: String?) {
 
         setLinkUri(uri)
@@ -138,6 +149,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
         workManager.enqueue(downloadRequest)
         val liveData = workManager.getWorkInfoByIdLiveData(downloadRequest.id)
 
+
         liveData.observe(
             this,
             Observer {
@@ -147,8 +159,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     WorkInfo.State.SUCCEEDED -> {
                         message = "Download completed"
                         success = true
-                        setOutputUri(it.outputData.toString())
-                        binding.actionsBtn.visibility = View.VISIBLE
+                        setOutputUri(it.outputData.getString("KEY_IMAGEFILE_URI"))
                         sendBroadcast(Intent(DOWNLOAD_COMPLETE))
                     }
                     WorkInfo.State.CANCELLED -> {
@@ -176,7 +187,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
         )
     }
 
-    private fun updateEpisode(){
+    private fun updateEpisode() {
         episodeViewModel.current.observe(
             this,
             Observer {
@@ -187,7 +198,8 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     outputUri.toString(),
                     it.audio,
                     it.dataPublicacao,
-                    it.feedId)
+                    it.feedId
+                )
 
                 episodeViewModel.update(episode)
                 finish()

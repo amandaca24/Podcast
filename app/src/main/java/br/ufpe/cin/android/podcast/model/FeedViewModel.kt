@@ -17,25 +17,25 @@ class FeedViewModel(val feedRepo: FeedRepository) : ViewModel() {
 
     var current = MutableLiveData<LiveData<List<Episode>>>()
 
-    fun insert(feed: Feed){
-        viewModelScope.launch(Dispatchers.IO){
+    fun insert(feed: Feed) {
+        viewModelScope.launch(Dispatchers.IO) {
             feedRepo.insertShow(feed)
         }
     }
 
-    fun delete(feed: Feed){
+    fun delete(feed: Feed) {
         viewModelScope.launch(Dispatchers.IO) {
             feedRepo.deleteShow(feed)
         }
     }
 
-    fun findByTitle(title: String){
+    fun findByTitle(title: String) {
         viewModelScope.launch(Dispatchers.IO) {
             feedRepo.findByTitle(title)
         }
     }
 
-    fun findByUrl(url: String){
+    fun findByUrl(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
             feedRepo.findByByUrlFeed(url)
         }

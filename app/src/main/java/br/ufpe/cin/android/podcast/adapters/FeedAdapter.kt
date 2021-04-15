@@ -1,6 +1,7 @@
 package br.ufpe.cin.android.podcast.adapters
 
 import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,16 +10,24 @@ import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.android.podcast.EpisodeActivity
 import br.ufpe.cin.android.podcast.data.Feed
 import br.ufpe.cin.android.podcast.databinding.FeedRvBinding
+import com.squareup.picasso.Picasso
 
-class FeedAdapter(private val inflater: LayoutInflater) : ListAdapter<Feed, FeedAdapter.FeedViewHolder>(FeedDiffer) {
+class FeedAdapter(private val inflater: LayoutInflater) :
+    ListAdapter<Feed, FeedAdapter.FeedViewHolder>(FeedDiffer) {
 
-    class FeedViewHolder(private val binding: FeedRvBinding) : RecyclerView.ViewHolder(binding.root){
+    class FeedViewHolder(private val binding: FeedRvBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         //Vai ligar os atibutos da entidade Feed aos componentes da view
-        fun bindTo(feed: Feed){
+        fun bindTo(feed: Feed) {
             binding.feedTitle.text = feed.titulo
             binding.feedDescription.text = feed.descricao
             binding.feedUrl.text = feed.linkSite
+
+            if(feed.imagemURL != null){
+                var img = Uri.parse(feed.imagemURL)
+                Picasso.get().load(img).into(binding.feedImg)
+            }
 
             //Ao clicar no card, vai abrir a lista de episódios do Feed
             binding.root.setOnClickListener {

@@ -10,9 +10,9 @@ class PreferencesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_preferencias)
         //Após criar o fragmento, use o código abaixo para exibir
         supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.preferencias,PrefsFragment())
-                .commit()
+            .beginTransaction()
+            .replace(R.id.preferencias, PrefsFragment())
+            .commit()
     }
 
     class PrefsFragment : PreferenceFragmentCompat() {

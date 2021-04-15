@@ -20,7 +20,8 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
     //A classe view holder é o fixador de visualização. O atributo binding está chamando o id do itemfeed.xml,
     // onde estão os componentes que serão vinculados à lista dinâmica
 
-    class EpisodeViewHolder(private val binding: ItemfeedBinding) : RecyclerView.ViewHolder(binding.root) {
+    class EpisodeViewHolder(private val binding: ItemfeedBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         //Aqui são feitos os bindings entre os componentes da view e o episódio salvo no BD
         fun bindTo(episode: Episode) {
@@ -57,15 +58,13 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
                 }
             } else {
                 //Com o episódio baixado localmente, o botão de play será renderizado.
-                    //Ao clicar em play, o episódio baixado será tocado
+                // Ao clicar em play, o episódio baixado será tocado
                 var play = false
                 binding.itemAction.setImageResource(R.drawable.ic_baseline_play_arrow_24)
                 binding.itemAction.isEnabled = true
                 binding.itemAction.setOnClickListener {
                     if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
-                        val root =
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        val audioFile = File(root, episode.linkArquivo)
+                        val audioFile = File(episode.linkArquivo)
                         if (audioFile.exists()) {
                             if (!play) {
                                 val i = Intent(
@@ -76,6 +75,9 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
                                 binding.root.context.startService(i)
                                 play = true
                                 binding.itemAction.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
+                                binding.itemAction.setOnClickListener {
+
+                                }
                             } else {
                                 binding.root.context.stopService(
                                     Intent(

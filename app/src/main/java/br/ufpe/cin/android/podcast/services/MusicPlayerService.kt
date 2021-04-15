@@ -17,7 +17,7 @@ import java.io.FileInputStream
 
 class MusicPlayerService : Service() {
 
-    private lateinit var mediaPlayer : MediaPlayer
+    private lateinit var mediaPlayer: MediaPlayer
     private var startNum = 0
 
 
@@ -31,7 +31,7 @@ class MusicPlayerService : Service() {
         val intent = Intent(this, EpisodeDetailActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
-        val notification : Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_baseline_play_arrow_24)
             .setOngoing(true)
             .setContentTitle("Service on going")
@@ -42,33 +42,30 @@ class MusicPlayerService : Service() {
         startForeground(NOTIFICATION_ID, notification)
     }
 
+    //Este método vai iniciar o service a partir de um comando.
+    // Pegará o valor passado pela intent ao clicar no botão play
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startNum ++
+        startNum++
         var audio = intent?.getStringExtra("audio").toString()
-        var filePath = FileInputStream(Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_DOWNLOADS).path+"/"+ audio)
-        Log.i("MusicPlayerService", filePath.toString())
+        Log.i("MusicPlayerService", audio)
         //mediaPlayer = MediaPlayer.create(this, filePath.fd);
         mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(filePath.fd);
+        mediaPlayer.setDataSource(audio);
         mediaPlayer.prepare();
         mediaPlayer.start()
 
-        //Sinaliza o que fazer caso o service seja interrompido pelo sistema
-        //START_NOT_STICKY - não é reiniciado automaticamente
-        //START_STICKY - vai ser reiniciado automaticamente assim que possível, com intent nulo
-        //START_REDELIVER_INTENT - vai ser reiniciado automaticamente assim que possível, com último intent usado para comando start
+        //Não vai ser reiniciado automaticamenyr caso o service seja interrompido
         return START_NOT_STICKY
     }
 
-    fun playMusic(){
-        if(!mediaPlayer.isPlaying){
+    fun playMusic() {
+        if (!mediaPlayer.isPlaying) {
             mediaPlayer.start()
         }
     }
 
-    fun pauseMusic(){
-        if(mediaPlayer.isPlaying){
+    fun pauseMusic() {
+        if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
         }
     }
@@ -88,16 +85,18 @@ class MusicPlayerService : Service() {
         return musicBuinder
     }
 
-    private val musicBuinder : IBinder = MusicBinder()
+    private val musicBuinder: IBinder = MusicBinder()
 
-    inner class MusicBinder : Binder(){
-        val service : MusicPlayerService
+    inner class MusicBinder : Binder() {
+        val service: MusicPlayerService
             get() = this@MusicPlayerService
 
     }
 
-    fun createChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+    //Cria no canal de notificação do sistema do usuário,
+    // onde ele vai poder gerenciar o play do aplicativo na sua central de notificações
+    fun createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 CHANNEL_ID,
                 VERBOSE_NOTIFICATION_CHANNEL_NAME,

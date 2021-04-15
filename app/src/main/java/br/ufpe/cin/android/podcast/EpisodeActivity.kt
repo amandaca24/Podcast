@@ -26,7 +26,7 @@ class EpisodeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEpisodeBinding
 
     //Inicializa o objeto do ViewModel para acessar os dados, garantindo a integridade deles
-    private val episodeViewModel : EpisodeViewModel by viewModels{
+    private val episodeViewModel: EpisodeViewModel by viewModels {
         val repo = EpisodeRepository(PodcastDatabase.getDatabase(this).episodeDAO())
         EpisodeViewModelFactory(repo)
     }
@@ -46,7 +46,12 @@ class EpisodeActivity : AppCompatActivity() {
         //Aplicando o adapter do recycler view
         recyclerViewEpisodes.apply {
             layoutManager = LinearLayoutManager(this@EpisodeActivity)
-            addItemDecoration(DividerItemDecoration(this@EpisodeActivity, DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    this@EpisodeActivity,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             adapter = episodeAdapter
 
         }
@@ -63,15 +68,15 @@ class EpisodeActivity : AppCompatActivity() {
                     episodeAdapter.submitList(it.toList())
                 }
             )
-            } else {
-                Toast.makeText(this, "There are no episodes in this feed!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "There are no episodes in this feed!", Toast.LENGTH_SHORT).show()
         }
     }
 
     //Recebe um broadcast informando que o download foi concluído e vai avisar ao adapter que houve modificação nos dados
-    private val onDownloadComplete = object : BroadcastReceiver(){
+    private val onDownloadComplete = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Toast.makeText(binding.root.context, "Download done", Toast.LENGTH_SHORT).show()
+            Toast.makeText(binding.root.context, "Download completed!", Toast.LENGTH_SHORT).show()
             episodeAdapter.notifyDataSetChanged()
         }
     }

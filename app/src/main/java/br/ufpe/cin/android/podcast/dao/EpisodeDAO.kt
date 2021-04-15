@@ -21,11 +21,11 @@ interface EpisodeDAO {
     @Query("SELECT * FROM episodios WHERE dataPublicacao LIKE :date_publi")
     suspend fun findByDate(date_publi: String): Episode
 
-    @Query("SELECT * FROM episodios WHERE linkArquivo LIKE :link" )
-    suspend fun findByLinkArchive(link: String) : Episode
+    @Query("SELECT * FROM episodios WHERE linkArquivo LIKE :link")
+    suspend fun findByLinkArchive(link: String): Episode
 
     @Query("SELECT * FROM episodios WHERE feedId LIKE :feed")
-    fun findByFeed(feed: String) : LiveData<List<Episode>>
+    fun findByFeed(feed: String): LiveData<List<Episode>>
 
     //A estratégia aqui é de substituir os dados do episódio em caso de conflito (mesma PK)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

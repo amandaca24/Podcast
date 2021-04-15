@@ -31,7 +31,7 @@ class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() 
     fun findByTitle(title: String) {
         viewModelScope.launch {
             val ep = repository.findByTitle(title)
-            withContext(Dispatchers.Main.immediate){
+            withContext(Dispatchers.Main.immediate) {
                 current.value = ep
             }
         }
@@ -43,8 +43,8 @@ class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() 
         }
     }
 
-    fun findByFeed(feed: String) : LiveData<List<Episode>> {
-            return repository.findByFeed(feed)
+    fun findByFeed(feed: String): LiveData<List<Episode>> {
+        return repository.findByFeed(feed)
     }
 
     fun delete(episode: Episode) {
@@ -60,7 +60,8 @@ class EpisodeViewModel(private val repository: EpisodeRepository) : ViewModel() 
     }
 }
 
-class EpisodeViewModelFactory(private val repository: EpisodeRepository) : ViewModelProvider.Factory {
+class EpisodeViewModelFactory(private val repository: EpisodeRepository) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(EpisodeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
