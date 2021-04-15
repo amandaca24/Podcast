@@ -28,7 +28,7 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
             binding.itemTitle.text = episode.titulo
             binding.itemDate.text = episode.dataPublicacao
 
-            val context = binding.itemTitle.context
+            val context = binding.root.context
             val title = episode.titulo
 
             //Torna o card clicável
@@ -41,7 +41,6 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
                 }
                 context.startActivity(intentEp)
             }
-
             //Vê se o episódio está baixado localmente
             //Se não, irá renderizar o botão para download do episódio
             //Ao terminar o download, o botão de play será renderizado
@@ -67,39 +66,20 @@ class EpisodeAdapter(private val inflater: LayoutInflater) :
                         val audioFile = File(episode.linkArquivo)
                         if (audioFile.exists()) {
                             if (!play) {
-                                val i = Intent(
-                                    binding.root.context,
-                                    MusicPlayerService::class.java
-                                )
-                                i.putExtra("audio", episode.linkArquivo)
-                                binding.root.context.startService(i)
-                                play = true
-                                binding.itemAction.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
-                                binding.itemAction.setOnClickListener {
-
+                                val intentPlay = Intent(binding.root.context, MusicPlayerService::class.java).apply {
+                                    putExtra("audio", episode.linkArquivo)
                                 }
+                                binding.root.context.startService(intentPlay)
+                                play = true
                             } else {
-                                binding.root.context.stopService(
-                                    Intent(
-                                        binding.root.context,
-                                        MusicPlayerService::class.java
-                                    )
-                                )
+                                binding.root.context.stopService(Intent(binding.root.context, MusicPlayerService::class.java))
                                 play = false
                             }
                         } else {
-                            Toast.makeText(
-                                binding.root.context,
-                                "This file does not exist",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(binding.root.context, "This file does not exist", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(
-                            binding.root.context,
-                            "External environment is not mounted",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(binding.root.context, "External environment is not mounted", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

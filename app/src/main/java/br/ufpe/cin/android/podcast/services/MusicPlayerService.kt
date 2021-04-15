@@ -5,20 +5,19 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
-import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import br.ufpe.cin.android.podcast.EpisodeDetailActivity
 import br.ufpe.cin.android.podcast.R
 import br.ufpe.cin.android.podcast.utils.*
-import java.io.FileInputStream
+import java.io.File
 
 
 class MusicPlayerService : Service() {
 
     private lateinit var mediaPlayer: MediaPlayer
-    private var startNum = 0
+    private var pos = 0
 
 
     override fun onCreate() {
@@ -35,7 +34,7 @@ class MusicPlayerService : Service() {
             .setSmallIcon(R.drawable.ic_baseline_play_arrow_24)
             .setOngoing(true)
             .setContentTitle("Service on going")
-            .setContentText("Play music")
+            .setContentText("Play Episode")
             .setContentIntent(pendingIntent)
             .build()
 
@@ -45,36 +44,58 @@ class MusicPlayerService : Service() {
     //Este método vai iniciar o service a partir de um comando.
     // Pegará o valor passado pela intent ao clicar no botão play
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startNum++
-        var audio = intent?.getStringExtra("audio").toString()
+        val audio = intent?.getStringExtra("audio").toString()
         Log.i("MusicPlayerService", audio)
-        //mediaPlayer = MediaPlayer.create(this, filePath.fd);
+
         mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(audio);
-        mediaPlayer.prepare();
+        mediaPlayer.setDataSource(audio)
+        mediaPlayer.prepare()
         mediaPlayer.start()
+
+        mediaPlayer.isLooping = false
+
+        //Ao finalizar o episódio, apaga o arquivo na pasta local
+        mediaPlayer.setOnCompletionListener {
+            val file = File(audio)
+            file.delete()
+        }
 
         //Não vai ser reiniciado automaticamenyr caso o service seja interrompido
         return START_NOT_STICKY
     }
 
+    //Vai tocar o episódio caso ele ainda não esteja
+    //Caso tenha sido pausado, começará de onde parou
     fun playMusic() {
-        if (!mediaPlayer.isPlaying) {
+        if (!mediaPlayer.isPlaying && pos == 0) {
             mediaPlayer.start()
+        } else if (pos > 0){
+            mediaPlayer.seekTo(pos)
         }
     }
 
+    //Vai pausar o episódio e pegar a posição
     fun pauseMusic() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
+           pos = mediaPlayer.currentPosition
         }
     }
 
-    fun rewind() {
+    //Vai voltar o episódio do começo
+    fun rewindMusic() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.seekTo(0)
         }
     }
+
+    fun stopMusic(){
+        if(mediaPlayer.isPlaying){
+            mediaPlayer.stop()
+        }
+    }
+
+
 
     /*override fun onDestroy() {
         mediaPlayer.release()

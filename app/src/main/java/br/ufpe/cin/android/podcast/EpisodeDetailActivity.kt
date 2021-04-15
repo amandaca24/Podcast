@@ -72,17 +72,9 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.descriptionEpisode.text = it.descricao
                     binding.linkEpisode.text = it.linkEpisodio
 
-                    if (it.linkArquivo != "") {
-                        binding.actionsBtn.visibility = View.VISIBLE
-                        val i = Intent(
-                            binding.root.context,
-                            MusicPlayerService::class.java
-                        )
-                        i.putExtra("audio", it.linkArquivo)
-                    }
                     binding.actionsBtn.visibility = View.INVISIBLE
-
                 })
+
             //Vai trabalhar a visibilidade dos botões de play e pause dinamicamente
 
         } else if (title != null && detail.equals("false")) {
@@ -106,6 +98,20 @@ class EpisodeDetailActivity : AppCompatActivity() {
             finish()
         }
 
+        episodeViewModel.current.observe(
+            this,
+            Observer {
+                if (it.linkArquivo.isNotEmpty()) {
+                    binding.actionsBtn.visibility = View.VISIBLE
+                    val i = Intent(
+                        binding.root.context,
+                        MusicPlayerService::class.java
+                    )
+                    i.putExtra("audio", it.linkArquivo)
+                    isBound = true
+                }
+            })
+
         //Vai ver se o serviço já está funcionando.
         //Se não, vai inicializá-lo
         binding.playBtn.setOnClickListener {
@@ -122,8 +128,18 @@ class EpisodeDetailActivity : AppCompatActivity() {
         binding.pauseBtn.setOnClickListener {
             if (isBound) {
                 musicPlayerService?.pauseMusic()
-            } else {
-                Toast.makeText(this, "You must play the episode first", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.stopBtn.setOnClickListener {
+            if(isBound){
+                musicPlayerService?.stopMusic()
+            }
+        }
+
+        binding.rewindBtn.setOnClickListener {
+            if(isBound){
+                musicPlayerService?.rewindMusic()
             }
         }
     }
