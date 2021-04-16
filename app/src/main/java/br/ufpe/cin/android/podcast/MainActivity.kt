@@ -152,6 +152,7 @@ class MainActivity : AppCompatActivity() {
                         "",
                         a.audio.toString(),
                         a.pubDate.toString(),
+                        a.image.toString(),
                         it?.urlFeed.toString() )}
 
                 if (episode != null) {

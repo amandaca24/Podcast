@@ -23,6 +23,8 @@ class MusicPlayerService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        mediaPlayer = MediaPlayer()
+
         createChannel()
 
         //Permite ao usuário receber a notificação do serviço que está em execução no sistema
@@ -47,8 +49,14 @@ class MusicPlayerService : Service() {
         val audio = intent?.getStringExtra("audio").toString()
         Log.i("MusicPlayerService", audio)
 
-        mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(audio)
+        startMusic(audio)
+
+        //Não vai ser reiniciado automaticamenyr caso o service seja interrompido
+        return START_NOT_STICKY
+    }
+
+    fun startMusic(audioEpisode : String){
+        mediaPlayer.setDataSource(audioEpisode)
         mediaPlayer.prepare()
         mediaPlayer.start()
 
@@ -56,12 +64,9 @@ class MusicPlayerService : Service() {
 
         //Ao finalizar o episódio, apaga o arquivo na pasta local
         mediaPlayer.setOnCompletionListener {
-            val file = File(audio)
+            val file = File(audioEpisode)
             file.delete()
         }
-
-        //Não vai ser reiniciado automaticamenyr caso o service seja interrompido
-        return START_NOT_STICKY
     }
 
     //Vai tocar o episódio caso ele ainda não esteja
@@ -95,12 +100,10 @@ class MusicPlayerService : Service() {
         }
     }
 
-
-
-    /*override fun onDestroy() {
+    override fun onDestroy() {
         mediaPlayer.release()
         super.onDestroy()
-    }*/
+    }
 
     override fun onBind(intent: Intent): IBinder {
         return musicBuinder

@@ -5,129 +5,145 @@
     android:padding="7dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_margin="2dp"
+        card_view:strokeWidth="1dp"
+        card_view:cardCornerRadius="8dp"
+        card_view:strokeColor="@color/teal_600"
+        android:elevation="@dimen/cardview_default_elevation"
+        card_view:contentPadding="16dp"
+        card_view:cardUseCompatPadding="true">
 
-        <TextView
-            android:id="@+id/app_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_activity_episode"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/title_episode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/item_title" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Episode link: "
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/link_episode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Link" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Release date: "
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/date_episode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="From feed link: "
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/feed_id"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Feed" />
+            android:orientation="vertical">
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/img_episode"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_baseline_photo_24"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:id="@+id/app_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_activity_episode"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/title_episode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/item_title" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Release date: "
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/date_episode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Episode link: "
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_episode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Link" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/actions_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_600"
+                android:orientation="horizontal"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="100dp"
+                android:layout_marginTop="16dp">
+
+                <ImageButton
+                    android:id="@+id/play_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_play_circle_outline_24" />
+
+                <ImageButton
+                    android:id="@+id/pause_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_pause_circle_outline_24" />
+
+                <ImageButton
+                    android:id="@+id/stop_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_stop_circle_24" />
+
+                <ImageButton
+                    android:id="@+id/rewind_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_fast_rewind_24" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/description_episode"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description"
-            android:textAlignment="center" />
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/description_episode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textAlignment="center" />
+
+        </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/actions_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/teal_600"
-        android:orientation="horizontal"
-        android:rotationY="0">
-
-        <ImageButton
-            android:id="@+id/play_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_baseline_play_circle_outline_24" />
-
-        <ImageButton
-            android:id="@+id/pause_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_baseline_pause_circle_outline_24" />
-
-        <ImageButton
-            android:id="@+id/stop_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_baseline_stop_circle_24" />
-
-        <ImageButton
-            android:id="@+id/rewind_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_baseline_fast_rewind_24" />
-
-
-    </LinearLayout>
 
 </LinearLayout>

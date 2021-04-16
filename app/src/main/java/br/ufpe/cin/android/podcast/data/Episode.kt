@@ -12,6 +12,7 @@ data class Episode(
     val linkArquivo: String,
     val audio: String,
     val dataPublicacao: String,
+    val episodeImage : String,
     val feedId: String
 ) {
     override fun toString(): String {

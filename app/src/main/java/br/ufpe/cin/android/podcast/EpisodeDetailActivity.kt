@@ -3,6 +3,7 @@ package br.ufpe.cin.android.podcast
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import android.view.View
@@ -22,6 +23,7 @@ import br.ufpe.cin.android.podcast.model.EpisodeViewModelFactory
 import br.ufpe.cin.android.podcast.repositories.EpisodeRepository
 import br.ufpe.cin.android.podcast.services.MusicPlayerService
 import br.ufpe.cin.android.podcast.utils.KEY_LINK_URI
+import com.squareup.picasso.Picasso
 
 class EpisodeDetailActivity : AppCompatActivity() {
 
@@ -73,6 +75,10 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.linkEpisode.text = it.linkEpisodio
 
                     binding.actionsBtn.visibility = View.INVISIBLE
+
+                    val img = Uri.parse(it.episodeImage)
+
+                    Picasso.get().load(img).into(binding.imgEpisode)
                 })
 
             //Vai trabalhar a visibilidade dos botões de play e pause dinamicamente
@@ -87,6 +93,10 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     binding.dateEpisode.text = it.dataPublicacao
                     binding.descriptionEpisode.text = it.descricao
                     binding.linkEpisode.text = it.linkEpisodio
+
+                    val img = Uri.parse(it.episodeImage)
+
+                    Picasso.get().load(img).into(binding.imgEpisode)
 
                     downloadEp(it.audio)
                     Log.i("EPISODE AUDIO = ", it.audio)
@@ -108,10 +118,11 @@ class EpisodeDetailActivity : AppCompatActivity() {
                         MusicPlayerService::class.java
                     )
                     i.putExtra("audio", it.linkArquivo)
-                    isBound = true
+
                 }
             })
 
+        checkDownload()
         //Vai ver se o serviço já está funcionando.
         //Se não, vai inicializá-lo
         binding.playBtn.setOnClickListener {
@@ -132,13 +143,13 @@ class EpisodeDetailActivity : AppCompatActivity() {
         }
 
         binding.stopBtn.setOnClickListener {
-            if(isBound){
+            if (isBound) {
                 musicPlayerService?.stopMusic()
             }
         }
 
         binding.rewindBtn.setOnClickListener {
-            if(isBound){
+            if (isBound) {
                 musicPlayerService?.rewindMusic()
             }
         }
@@ -214,6 +225,7 @@ class EpisodeDetailActivity : AppCompatActivity() {
                     outputUri.toString(),
                     it.audio,
                     it.dataPublicacao,
+                    it.episodeImage,
                     it.feedId
                 )
 
@@ -234,6 +246,20 @@ class EpisodeDetailActivity : AppCompatActivity() {
 
     }
 
+    fun checkDownload() {
+        if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
+            val audio = outputUri.toString()
+
+            if (!audio.isNullOrEmpty()) {
+                musicPlayerService?.let { }
+
+                musicPlayerService?.startMusic(audio)
+                isBound = true
+            }
+
+        }
+    }
+
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             isBound = true
@@ -249,6 +275,8 @@ class EpisodeDetailActivity : AppCompatActivity() {
 
     }
 
+    //Métodos só pra ajustar o input/output do download, passando String para Uri
+    // e fazendo o build do dado
     fun createInputData(): Data {
         val builder = Data.Builder()
         linkUri?.let {
@@ -265,9 +293,6 @@ class EpisodeDetailActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Setters
-     */
     internal fun setLinkUri(uri: String?) {
         linkUri = uriOrNull(uri)
     }
